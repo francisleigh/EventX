@@ -1,29 +1,60 @@
-import { Link } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Link } from "expo-router";
+import { Text as RNText, TouchableOpacity, View } from "react-native";
+import { Text } from "~/components/core/Text";
+import { Button } from "~/components/core/Button";
+import { Card, PageContainer } from "~/components/core/Layout";
+import { Poll } from "~/components/app/Poll";
 
 export default function Page() {
   return (
-    <View className={styles.container}>
-      <View className={styles.main}>
-        <View>
-          <Text className={styles.title}>Hello World</Text>
-          <Text className={styles.subtitle}>This is the first page of your app.</Text>
-        </View>
-        <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
-          <TouchableOpacity className={styles.button}>
-            <Text className={styles.buttonText}>Show Details</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
-    </View>
+    <PageContainer>
+      <Text.H1>Hi Ellen!</Text.H1>
+      <PageContainer.InnerContent>
+        <Card>
+          <Text.H2>Hi Ellen!</Text.H2>
+        </Card>
+
+        <Poll
+          view={"full"}
+          title={"Where shall we go?"}
+          items={[
+            {
+              id: "1",
+              label: "Same as 2023",
+              link: `www.vrbo.com/1234abc`,
+            },
+            {
+              id: "2",
+              label: "Umbrian Castle",
+              link: `www.vrbo.com/abcd1`,
+            },
+          ]}
+        />
+
+        <Card shadow>
+          <Text.Body>Hi Ellen!</Text.Body>
+          <Text.Span>Hi Ellen!</Text.Span>
+          <Button onPress={() => {}}>Hi Ellen!</Button>
+        </Card>
+        <Card shadow>
+          <Text.Body>Hi Ellen!</Text.Body>
+          <Text.Span>Hi Ellen!</Text.Span>
+          <Button onPress={() => {}}>Hi Ellen!</Button>
+        </Card>
+      </PageContainer.InnerContent>
+
+      <Link
+        asChild
+        href={{ pathname: "/details", params: { name: "Dan" } }}
+        style={{
+          borderWidth: 1,
+          borderColor: "red",
+          padding: 20,
+          pointerEvents: "auto",
+        }}
+      >
+        <Button>Show Details</Button>
+      </Link>
+    </PageContainer>
   );
 }
-
-const styles = {
-  button: 'items-center bg-indigo-500 rounded-[28px] shadow-md p-4',
-  buttonText: 'text-white text-lg font-semibold text-center',
-  container: 'flex-1 p-6',
-  main: 'flex-1 max-w-[960] justify-between',
-  title: 'text-[64px] font-bold',
-  subtitle: 'text-4xl text-gray-700',
-};
