@@ -15,7 +15,9 @@ export default function Page() {
         </Card>
 
         <Poll
-          view={"full"}
+          linkProps={{
+            href: { pathname: "/details", params: { name: "Dan" } },
+          }}
           title={"Where shall we go?"}
           items={[
             {

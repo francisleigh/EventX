@@ -3,7 +3,7 @@ import { sHeight } from "~/constants/layout";
 import { padding, gap } from "~/constants/spacing";
 import { colors } from "~/constants/colors";
 import { borderWidth, borderRadius } from "~/constants/borders";
-import { ScrollView, ViewProps } from "react-native";
+import { ScrollView, StyleProp, ViewProps, ViewStyle } from "react-native";
 
 type ContainerProps = Pick<ViewProps, "children">;
 export const PageContainer = ({ children }: ContainerProps) => {
@@ -37,9 +37,11 @@ export const Card = ({
   children,
   shadow,
   variant,
+  style,
 }: ContainerProps & {
   shadow?: boolean;
   variant?: keyof typeof variantToColorMap;
+  style?: StyleProp<ViewStyle>;
 }) => {
   return (
     <Div
@@ -51,7 +53,7 @@ export const Card = ({
             ? variantToColorMap[variant] ?? colors.primary
             : colors.primary,
           padding: padding.default,
-          gap: gap.sm,
+          gap: gap.default,
         },
         shadow && {
           shadowColor: colors.primary,
@@ -64,6 +66,7 @@ export const Card = ({
 
           elevation: 5,
         },
+        style,
       ]}
     >
       {children}

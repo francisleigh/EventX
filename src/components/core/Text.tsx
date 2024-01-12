@@ -1,8 +1,5 @@
-import { Div, H1, H2, P, Span } from "@expo/html-elements";
-import { Text as RNText, type TextProps } from "react-native";
-import { View } from "react-native";
+import { Text as RNText, View, type TextProps } from "react-native";
 import { gap, padding } from "~/constants/spacing";
-import { borderWidth } from "~/constants/borders";
 import { fontSize } from "~/constants/font-size";
 import { colors } from "~/constants/colors";
 
@@ -17,8 +14,8 @@ Base.displayName = "Text";
 
 Base.H1 = ({ children, style, ...props }: TextProps) => {
   return (
-    <Div style={{ flexDirection: "column", gap: gap.default }}>
-      <H1
+    <View style={{ gap: gap.default }}>
+      <RNText
         style={[
           {
             fontSize: fontSize.h1,
@@ -30,21 +27,21 @@ Base.H1 = ({ children, style, ...props }: TextProps) => {
         {...props}
       >
         {children}
-      </H1>
+      </RNText>
 
-      <Div
+      <View
         style={{
           paddingVertical: padding.default,
           backgroundColor: colors.primary,
         }}
       />
-    </Div>
+    </View>
   );
 };
 
 Base.H2 = ({ children, style, ...props }: TextProps) => {
   return (
-    <H2
+    <RNText
       style={[
         {
           fontSize: fontSize.h2,
@@ -56,13 +53,13 @@ Base.H2 = ({ children, style, ...props }: TextProps) => {
       {...props}
     >
       {children}
-    </H2>
+    </RNText>
   );
 };
 
 Base.Body = ({ children, style, ...props }: TextProps) => {
   return (
-    <P
+    <RNText
       style={[
         {
           fontSize: fontSize.body,
@@ -73,13 +70,13 @@ Base.Body = ({ children, style, ...props }: TextProps) => {
       {...props}
     >
       {children}
-    </P>
+    </RNText>
   );
 };
 
 Base.Span = ({ children, style, ...props }: TextProps) => {
   return (
-    <Span
+    <RNText
       style={[
         {
           fontSize: fontSize.span,
@@ -90,7 +87,7 @@ Base.Span = ({ children, style, ...props }: TextProps) => {
       {...props}
     >
       {children}
-    </Span>
+    </RNText>
   );
 };
 
@@ -101,7 +98,7 @@ Base.Button = ({
   ...props
 }: TextProps & { color?: (typeof colors)[keyof typeof colors] }) => {
   return (
-    <Span
+    <RNText
       style={[
         {
           fontSize: fontSize.button,
@@ -113,7 +110,7 @@ Base.Button = ({
       {...props}
     >
       {children}
-    </Span>
+    </RNText>
   );
 };
 export const Text = Base;
