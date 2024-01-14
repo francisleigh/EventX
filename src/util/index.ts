@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, differenceInHours } from "date-fns";
 
 export const formatCurrency = (amount: number) => {
   const Pound = new Intl.NumberFormat("en-GB", {
@@ -12,4 +12,8 @@ export const formatCurrency = (amount: number) => {
 
 export const formatToDate = (date: Date) => {
   return format(date, "dd/MM/yyyy");
+};
+
+export const expiresSoon = (date: Date) => {
+  return differenceInHours(new Date(), date) < 12;
 };

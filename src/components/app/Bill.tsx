@@ -4,10 +4,10 @@ import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { Div } from "@expo/html-elements";
 import { gap, padding } from "~/constants/spacing";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useMemo } from "react";
-import { formatCurrency, formatToDate } from "~/util";
+import { expiresSoon, formatCurrency, formatToDate } from "~/util";
 import { View } from "react-native";
 
 type BillProps = {
@@ -51,13 +51,28 @@ export const Bill = ({
   const totalFormatted = useMemo(() => formatCurrency(total), [total]);
   const paidFormatted = useMemo(() => formatCurrency(totalPaid), [totalPaid]);
 
+  const willExpireSoon = !!expiry && expiresSoon(expiry);
+
   return (
     <>
       <Card
-        variant={settled ? "success" : undefined}
+        variant={settled ? "success" : willExpireSoon ? "error" : undefined}
+        shadow={view !== "full" && willExpireSoon}
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
-        <TitleBasedOnView>{title}</TitleBasedOnView>
+        <TitleBasedOnView>
+          {title}
+          {willExpireSoon && (
+            <>
+              {" "}
+              <MaterialCommunityIcons
+                name="clock-alert"
+                size={24}
+                color={colors.detail}
+              />
+            </>
+          )}
+        </TitleBasedOnView>
         {view === "full" && (
           <>
             {description && (

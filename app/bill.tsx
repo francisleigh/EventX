@@ -25,15 +25,17 @@ export default function BillPage() {
   }, [params, router.back]);
 
   return (
-    <PageContainer edges={["bottom", "left", "right"]}>
-      {fetchingEntry ? (
-        <ActivityIndicator color={colors.primary} />
-      ) : (
-        <>
-          <Bill {...data} view={"full"} onItemPress={console.log} />
-          <Button>Add payment</Button>
-        </>
-      )}
-    </PageContainer>
+    <>
+      <PageContainer edges={["bottom", "left", "right"]}>
+        {fetchingEntry ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <>
+            <Bill {...data} view={"full"} onItemPress={console.log} />
+            <Button>Add payment</Button>
+          </>
+        )}
+      </PageContainer>
+    </>
   );
 }

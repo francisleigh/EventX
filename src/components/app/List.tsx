@@ -4,11 +4,11 @@ import { Text } from "~/components/core/Text";
 import { gap, padding } from "~/constants/spacing";
 import { Div } from "@expo/html-elements";
 import { Link, LinkProps } from "expo-router";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { formatToDate } from "~/util";
+import { expiresSoon, formatToDate } from "~/util";
 
 type ListProps = {
   items: Omit<Parameters<typeof ListItem>[0], "onItemPress">[];
@@ -69,9 +69,27 @@ export const List = ({
     return <Entypo name="progress-one" size={24} color={colors.primary} />;
   }, [allStatuses]);
 
+  const willExpireSoon = !!expiry && expiresSoon(expiry);
+
   return (
-    <Card style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}>
-      <TitleBasedOnView>{title}</TitleBasedOnView>
+    <Card
+      variant={willExpireSoon ? "error" : undefined}
+      shadow={view !== "full" && willExpireSoon}
+      style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
+    >
+      <TitleBasedOnView>
+        {title}{" "}
+        {willExpireSoon && (
+          <>
+            {" "}
+            <MaterialCommunityIcons
+              name="clock-alert"
+              size={24}
+              color={colors.detail}
+            />
+          </>
+        )}
+      </TitleBasedOnView>
       {view === "full" && !!description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>

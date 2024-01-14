@@ -11,12 +11,12 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { colors } from "~/constants/colors";
 import { Link, LinkProps } from "expo-router";
 import { useCallback, useMemo } from "react";
-import { formatToDate } from "~/util";
+import { expiresSoon, formatToDate } from "~/util";
 import { Avatar } from "~/components/app/Avatar";
 
 const dotStylesByVote = StyleSheet.create({
@@ -147,9 +147,27 @@ export const Poll = ({
     [scoresSortedAndDeduped],
   );
 
+  const willExpireSoon = !!expiry && expiresSoon(expiry);
+
   return (
-    <Card style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}>
-      <TitleBasedOnView>{title}</TitleBasedOnView>
+    <Card
+      variant={willExpireSoon ? "error" : undefined}
+      shadow={view !== "full" && willExpireSoon}
+      style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
+    >
+      <TitleBasedOnView>
+        {title}
+        {willExpireSoon && (
+          <>
+            {" "}
+            <MaterialCommunityIcons
+              name="clock-alert"
+              size={24}
+              color={colors.detail}
+            />
+          </>
+        )}
+      </TitleBasedOnView>
 
       {view === "full" && !!description && (
         <Card shadow>
