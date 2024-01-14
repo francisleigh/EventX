@@ -1,11 +1,15 @@
 module.exports = function (api) {
   api.cache(true);
-  const plugins = [];
 
+  const plugins = [];
   plugins.push("expo-router/babel");
+  plugins.push("react-native-reanimated/plugin");
+
+  const presets = [];
+  presets.push("babel-preset-expo");
 
   return {
-    presets: ["babel-preset-expo"],
+    presets,
     plugins,
   };
 };

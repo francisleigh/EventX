@@ -34,53 +34,55 @@ export default function Page() {
   );
 
   return (
-    <PageContainer>
-      <Text.H1>Hi Ellen!</Text.H1>
+    <>
+      <PageContainer>
+        <Text.H1>Hi Ellen!</Text.H1>
 
-      <PageContainer.InnerContent>
-        {fetchingDbEntries ? (
-          <ActivityIndicator color={colors.primary} />
-        ) : (
-          <>
-            {!!polls.length &&
-              polls.map(([id, pollData]) => (
-                <Poll
-                  key={id}
-                  {...pollData}
-                  linkProps={{
-                    href: { pathname: "/poll", params: { id } },
-                  }}
-                />
-              ))}
+        <PageContainer.InnerContent>
+          {fetchingDbEntries ? (
+            <ActivityIndicator color={colors.primary} />
+          ) : (
+            <>
+              {!!polls.length &&
+                polls.map(([id, pollData]) => (
+                  <Poll
+                    key={id}
+                    {...pollData}
+                    linkProps={{
+                      href: { pathname: "/poll", params: { id } },
+                    }}
+                  />
+                ))}
 
-            {!!lists.length &&
-              lists.map(([id, listData]) => (
-                <List
-                  key={id}
-                  {...listData}
-                  linkProps={{
-                    href: { pathname: "/list", params: { id } },
-                  }}
-                />
-              ))}
+              {!!lists.length &&
+                lists.map(([id, listData]) => (
+                  <List
+                    key={id}
+                    {...listData}
+                    linkProps={{
+                      href: { pathname: "/list", params: { id } },
+                    }}
+                  />
+                ))}
 
-            {!!bills.length &&
-              bills.map(([id, billData]) => (
-                <Bill
-                  key={id}
-                  {...billData}
-                  linkProps={{
-                    href: {
-                      pathname: "/bill",
-                      params: { id },
-                    },
-                  }}
-                />
-              ))}
-          </>
-        )}
-      </PageContainer.InnerContent>
-      <Button icon={<Text.Button>+</Text.Button>}>Add new item</Button>
-    </PageContainer>
+              {!!bills.length &&
+                bills.map(([id, billData]) => (
+                  <Bill
+                    key={id}
+                    {...billData}
+                    linkProps={{
+                      href: {
+                        pathname: "/bill",
+                        params: { id },
+                      },
+                    }}
+                  />
+                ))}
+            </>
+          )}
+        </PageContainer.InnerContent>
+        <Button icon={<Text.Button>+</Text.Button>}>Add new item</Button>
+      </PageContainer>
+    </>
   );
 }
