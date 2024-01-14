@@ -1,62 +1,86 @@
-import { Link } from "expo-router";
-import { Text as RNText, TouchableOpacity, View } from "react-native";
 import { Text } from "~/components/core/Text";
-import { Button } from "~/components/core/Button";
-import { Card, PageContainer } from "~/components/core/Layout";
+import { PageContainer } from "~/components/core/Layout";
 import { Poll } from "~/components/app/Poll";
+import { List } from "~/components/app/List";
+import { useEffect, useMemo, useState } from "react";
+import { getTempDBEntries } from "~/tempdb";
+import { Bill } from "~/components/app/Bill";
+import { ActivityIndicator } from "react-native";
+import { colors } from "~/constants/colors";
+import { Button } from "~/components/core/Button";
 
 export default function Page() {
+  const [fetchingDbEntries, setFetchingDbEntries] = useState<boolean>(true);
+  const [dbEntries, setDbEntries] =
+    useState<Awaited<typeof getTempDBEntries>>();
+
+  useEffect(() => {
+    getTempDBEntries()
+      .then(setDbEntries)
+      .finally(() => setFetchingDbEntries(false));
+  }, [setDbEntries]);
+
+  const polls = useMemo(
+    () => (dbEntries?.polls ? Object.entries(dbEntries.polls) : []),
+    [dbEntries],
+  );
+  const lists = useMemo(
+    () => (dbEntries?.lists ? Object.entries(dbEntries.lists) : []),
+    [dbEntries],
+  );
+  const bills = useMemo(
+    () => (dbEntries?.bills ? Object.entries(dbEntries.bills) : []),
+    [dbEntries],
+  );
+
   return (
     <PageContainer>
       <Text.H1>Hi Ellen!</Text.H1>
+
       <PageContainer.InnerContent>
-        <Card>
-          <Text.H2>Hi Ellen!</Text.H2>
-        </Card>
+        {fetchingDbEntries ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <>
+            {!!polls.length &&
+              polls.map(([id, pollData]) => (
+                <Poll
+                  key={id}
+                  {...pollData}
+                  linkProps={{
+                    href: { pathname: "/poll", params: { id } },
+                  }}
+                />
+              ))}
 
-        <Poll
-          linkProps={{
-            href: { pathname: "/details", params: { name: "Dan" } },
-          }}
-          title={"Where shall we go?"}
-          items={[
-            {
-              id: "1",
-              label: "Same as 2023",
-              link: `www.vrbo.com/1234abc`,
-            },
-            {
-              id: "2",
-              label: "Umbrian Castle",
-              link: `www.vrbo.com/abcd1`,
-            },
-          ]}
-        />
+            {!!lists.length &&
+              lists.map(([id, listData]) => (
+                <List
+                  key={id}
+                  {...listData}
+                  linkProps={{
+                    href: { pathname: "/list", params: { id } },
+                  }}
+                />
+              ))}
 
-        <Card shadow>
-          <Text.Body>Hi Ellen!</Text.Body>
-          <Text.Span>Hi Ellen!</Text.Span>
-          <Button onPress={() => {}}>Hi Ellen!</Button>
-        </Card>
-        <Card shadow>
-          <Text.Body>Hi Ellen!</Text.Body>
-          <Text.Span>Hi Ellen!</Text.Span>
-          <Button onPress={() => {}}>Hi Ellen!</Button>
-        </Card>
+            {!!bills.length &&
+              bills.map(([id, billData]) => (
+                <Bill
+                  key={id}
+                  {...billData}
+                  linkProps={{
+                    href: {
+                      pathname: "/bill",
+                      params: { id },
+                    },
+                  }}
+                />
+              ))}
+          </>
+        )}
       </PageContainer.InnerContent>
-
-      <Link
-        asChild
-        href={{ pathname: "/details", params: { name: "Dan" } }}
-        style={{
-          borderWidth: 1,
-          borderColor: "red",
-          padding: 20,
-          pointerEvents: "auto",
-        }}
-      >
-        <Button>Show Details</Button>
-      </Link>
+      <Button icon={<Text.Button>+</Text.Button>}>Add new item</Button>
     </PageContainer>
   );
 }

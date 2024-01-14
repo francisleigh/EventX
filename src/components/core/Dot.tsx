@@ -7,11 +7,12 @@ import { borderWidth } from "~/constants/borders";
 export const Dot = ({
   color,
   pending,
+  style,
   children,
 }: {
   color?: keyof typeof colors;
   pending?: boolean;
-} & Pick<ViewProps, "children">) => {
+} & Pick<ViewProps, "children" | "style">) => {
   return (
     <Div
       style={[
@@ -22,10 +23,11 @@ export const Dot = ({
           backgroundColor: color
             ? colors[color] ?? colors.primary
             : colors.primary,
-          borderRadius: padding.default,
+          borderRadius: 100000,
           borderColor: color ? colors[color] ?? colors.primary : colors.primary,
         },
         pending && styles.pending,
+        style,
       ]}
     >
       {children}

@@ -4,6 +4,6 @@ export const borderRadius = {
 } as const;
 
 export const borderWidth = {
-  container: 3,
+  container: 5,
   fat: 10,
 } as const;

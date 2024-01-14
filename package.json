@@ -13,6 +13,7 @@
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.1.7",
     "class-variance-authority": "^0.7.0",
+    "date-fns": "^3.2.0",
     "expo": "~49.0.11",
     "expo-linking": "~5.0.2",
     "expo-router": "^2.0.0",

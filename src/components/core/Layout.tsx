@@ -4,25 +4,32 @@ import { padding, gap } from "~/constants/spacing";
 import { colors } from "~/constants/colors";
 import { borderWidth, borderRadius } from "~/constants/borders";
 import { ScrollView, StyleProp, ViewProps, ViewStyle } from "react-native";
+import {
+  SafeAreaView,
+  SafeAreaViewProps,
+} from "react-native-safe-area-context";
 
-type ContainerProps = Pick<ViewProps, "children">;
-export const PageContainer = ({ children }: ContainerProps) => {
+type ContainerProps = Pick<ViewProps, "children"> &
+  Pick<SafeAreaViewProps, "edges">;
+export const PageContainer = ({ children, edges }: ContainerProps) => {
   return (
-    <ScrollView
-      style={{
-        overflow: "scroll",
-        minHeight: sHeight,
-        backgroundColor: colors.secondary,
-        paddingHorizontal: padding["screen-x"],
-        paddingVertical: padding["screen-y"],
-      }}
-      contentContainerStyle={{
-        gap: gap.default,
-        paddingBottom: sHeight * 0.25,
-      }}
-    >
-      {children}
-    </ScrollView>
+    <SafeAreaView style={{ backgroundColor: colors.secondary }} edges={edges}>
+      <ScrollView
+        style={{
+          overflow: "scroll",
+          minHeight: sHeight,
+          backgroundColor: colors.secondary,
+          paddingHorizontal: padding["screen-x"],
+          paddingVertical: padding["screen-y"],
+        }}
+        contentContainerStyle={{
+          gap: gap.default,
+          paddingBottom: sHeight * 0.25,
+        }}
+      >
+        {children}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 PageContainer.InnerContent = ({ children }: ContainerProps) => {
@@ -47,6 +54,7 @@ export const Card = ({
     <Div
       style={[
         {
+          backgroundColor: colors.secondary,
           borderWidth: borderWidth.container,
           borderRadius: borderRadius.container,
           borderColor: variant
