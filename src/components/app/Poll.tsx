@@ -18,6 +18,8 @@ import { Link, LinkProps } from "expo-router";
 import { useCallback, useMemo } from "react";
 import { expiresSoon, formatToDate } from "~/util";
 import { Avatar } from "~/components/app/Avatar";
+import { usePollData } from "~/hooks/usePollData";
+import { Loading } from "~/components/app/Loading";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -56,66 +58,69 @@ const dotTextStylesByVote = StyleSheet.create({
   },
 });
 
-const handleOpenLink = async (item: PollItem) => {
+const handleOpenLink = async (item) => {
   if (await Linking.canOpenURL(item.link!)) {
     await Linking.openURL(item.link!);
   }
 };
 
-type PollItem = {
-  id: string;
-  label: string;
-  link?: string;
-  votes?: number;
-};
-
 type PollProps = {
+  eventId: string;
+  pollId: string;
+
+  onItemPress?: (item) => any;
+
   view?: "full";
-  title: string;
-  description?: string;
-  expiry?: Date;
-  items: PollItem[];
-  voters?: string[];
   linkProps?: LinkProps<any>;
-  onItemPress?: (item: PollItem) => any;
 };
 export const Poll = ({
   view,
-  title,
-  description,
-  expiry,
-  items,
-  voters,
+  eventId,
+  pollId,
   linkProps,
   onItemPress,
 }: PollProps) => {
+  const { fetching, data, getVoteCountForOption } = usePollData({
+    eventId,
+    pollId,
+  });
+
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
     [view],
   );
-  const itemsBasedOnView = useMemo(
+
+  const optionsBasedOnView =
+    view === "full" ? data?.options : data?.options?.slice(0, 3);
+
+  const scoresObject = useMemo(
     () =>
-      (view === "full" ? items : items.slice(0, 3)).sort((ia, ib) =>
-        (ia?.votes ?? 0) >= (ib?.votes ?? 0) ? -1 : 1,
+      data?.voters?.reduce(
+        (scoreObj, vote) => {
+          if (scoreObj[vote.optionId]) {
+            return {
+              ...scoreObj,
+              [vote.optionId]: ++scoreObj[vote.optionId],
+            };
+          }
+
+          return {
+            ...scoreObj,
+            [vote.optionId]: 1,
+          };
+        },
+        {} as { [key in string]: number },
       ),
-    [items, view],
+    [data?.voters],
   );
 
   const scoresSortedAndDeduped = useMemo(
-    () => [
-      ...new Set(
-        items
-          .filter(({ votes }) => typeof votes !== "undefined")
-          .map(({ votes }) => votes),
-      ),
-    ],
-    [items],
+    () => [...new Set(Object.values(scoresObject ?? {}))].sort().reverse(),
+    [scoresObject],
   );
 
   const getDotStylesFromVotes = useCallback(
-    (
-      votes: PollItem["votes"],
-    ): [StyleProp<ViewStyle>, StyleProp<TextStyle>] => {
+    (votes: number): [StyleProp<ViewStyle>, StyleProp<TextStyle>] => {
       const [firstPlace, runnerUp, thirdPlace, ...restOfPlaces] =
         scoresSortedAndDeduped;
       const lastPlace = restOfPlaces[restOfPlaces.length - 1];
@@ -147,7 +152,11 @@ export const Poll = ({
     [scoresSortedAndDeduped],
   );
 
-  const willExpireSoon = !!expiry && expiresSoon(expiry);
+  if (fetching) return <Loading />;
+
+  if (!data) return <Text.H1>No poll data</Text.H1>;
+
+  const willExpireSoon = !!data.expiry && expiresSoon(data.expiry.toDate());
 
   return (
     <Card
@@ -156,7 +165,7 @@ export const Poll = ({
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
       <TitleBasedOnView>
-        {title}
+        {data.title}
         {willExpireSoon && (
           <>
             {" "}
@@ -168,20 +177,20 @@ export const Poll = ({
           </>
         )}
       </TitleBasedOnView>
-
-      {view === "full" && !!description && (
+      {view === "full" && !!data.description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>
-          <Text.Span>{description}</Text.Span>
+          <Text.Span>{data.description}</Text.Span>
         </Card>
       )}
+      {optionsBasedOnView?.map((option) => {
+        const optionVotes = getVoteCountForOption(option.id);
+        const [dotStyle, dotTextStyle] = getDotStylesFromVotes(optionVotes);
 
-      {itemsBasedOnView.map((item) => {
-        const [dotStyle, dotTextStyle] = getDotStylesFromVotes(item.votes);
         return (
           <TouchableOpacity
-            key={item.id}
-            onPress={() => onItemPress && onItemPress(item)}
+            key={option.id}
+            onPress={() => onItemPress && onItemPress(option)}
             activeOpacity={onItemPress ? undefined : 1}
             style={[
               {
@@ -199,11 +208,11 @@ export const Poll = ({
                 paddingTop: 0,
               }}
             >
-              <Text.Body>{item.label}</Text.Body>
-              {view === "full" && !!item.link && (
-                <TouchableOpacity onPress={() => handleOpenLink(item)}>
+              <Text.Body>{option.label}</Text.Body>
+              {view === "full" && !!option.link && (
+                <TouchableOpacity onPress={() => handleOpenLink(option)}>
                   <Text.Span style={{ textDecorationLine: "underline" }}>
-                    {item.link}
+                    {option.link}
                   </Text.Span>
                 </TouchableOpacity>
               )}
@@ -220,7 +229,7 @@ export const Poll = ({
                 <Text.Span
                   style={[dotTextStyle, { fontVariant: ["tabular-nums"] }]}
                 >
-                  {item.votes || 1}
+                  {optionVotes}
                 </Text.Span>
               )}
               <Dot style={[dotStyle, { borderWidth: 1 }]} />
@@ -231,37 +240,33 @@ export const Poll = ({
 
       {view === "full" && (
         <>
-          {!!voters?.length && (
+          {!!data?.voters?.length && (
             <Card shadow>
               <Text.H2>People</Text.H2>
               <View style={{ flexDirection: "row", gap: gap.xs }}>
-                {voters
-                  .slice(0, 7)
-                  .filter(Boolean)
-                  .map((uid) => (
-                    <Avatar key={uid} source={{ uri: uid }} />
-                  ))}
-                {voters.length > 8 && (
+                {data.voters.slice(0, 7).map((vote) => (
+                  <Avatar key={vote.userId} source={{ uri: vote.userId }} />
+                ))}
+                {data.voters.length > 8 && (
                   <Dot
                     color={"secondary"}
                     style={{ borderWidth: 1, borderColor: colors.primary }}
                   >
-                    <Text.Span>+{voters.slice(8).length}</Text.Span>
+                    <Text.Span>+{data.voters.slice(8).length}</Text.Span>
                   </Dot>
                 )}
               </View>
             </Card>
           )}
 
-          {view === "full" && !!expiry && (
+          {view === "full" && !!data?.expiry && (
             <Card shadow>
               <Text.H2>Due date</Text.H2>
-              <Text.Body>{formatToDate(expiry)}</Text.Body>
+              <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
             </Card>
           )}
         </>
       )}
-
       {!!linkProps && view !== "full" && (
         <Link {...linkProps}>
           <Div

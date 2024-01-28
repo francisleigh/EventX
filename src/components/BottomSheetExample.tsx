@@ -16,6 +16,7 @@ export const BottomSheetExample = () => {
   }, []);
 
   const handleOpen = () => {
+    console.log("open sheet bebe");
     bottomSheetRef.current?.expand();
   };
 

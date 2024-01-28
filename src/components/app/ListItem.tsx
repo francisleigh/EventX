@@ -6,7 +6,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 
 type ListItemProps = {
-  id: string;
   title: string;
   quantity?: number;
   quantitySymbol?: string;
@@ -15,14 +14,13 @@ type ListItemProps = {
 };
 
 export const ListItem = ({
-  id,
   assignee,
   title,
   quantity,
   quantitySymbol = "x ",
   status = "pending",
   onItemPress,
-}: ListItemProps & { onItemPress?: (item: ListItemProps) => any }) => {
+}: ListItemProps & { onItemPress?: (() => any) | undefined }) => {
   const [avatarSource, setAvatarSource] = useState<string | undefined>(
     assignee ? "https://i.pravatar.cc/300" : undefined,
   );
@@ -34,9 +32,7 @@ export const ListItem = ({
   return (
     <TouchableOpacity
       activeOpacity={onItemPress ? undefined : 1}
-      onPress={() =>
-        onItemPress && onItemPress({ id, assignee, title, quantity, status })
-      }
+      onPress={() => onItemPress && onItemPress()}
       style={{
         flexDirection: "row",
         justifyContent: "space-between",

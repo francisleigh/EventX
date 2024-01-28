@@ -7,10 +7,9 @@ export default function Layout() {
       <Stack>
         <Stack.Screen name="index" options={{ header: () => null }} />
         <Stack.Screen
-          name="details"
+          name="event"
           options={{
             header: () => null,
-            presentation: "modal",
           }}
         />
         <Stack.Screen

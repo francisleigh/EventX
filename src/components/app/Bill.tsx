@@ -9,49 +9,61 @@ import { colors } from "~/constants/colors";
 import { useMemo } from "react";
 import { expiresSoon, formatCurrency, formatToDate } from "~/util";
 import { View } from "react-native";
+import { useBillData } from "~/hooks/useBillData";
+import { Loading } from "~/components/app/Loading";
 
 type BillProps = {
-  total: number;
-  items: Omit<
-    Parameters<typeof ListItem>[0],
-    "onItemPress" | "quantitySymbol" | "title"
-  >[];
-  title: string;
-  description?: string;
-  expiry?: Date;
+  eventId: string;
+  billId: string;
+
+  onItemPress?: () => any;
   view?: "full";
   linkProps?: LinkProps<any>;
-} & Pick<Parameters<typeof ListItem>[0], "onItemPress">;
+};
 
 const currency = { symbol: "£", code: "GBP" };
 
 export const Bill = ({
+  eventId,
+  billId,
   view,
-  title,
-  total,
-  items,
-  expiry,
-  linkProps,
   onItemPress,
-  description,
+  linkProps,
 }: BillProps) => {
+  const { fetching, data } = useBillData({ eventId, billId });
+
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
     [view],
   );
-  const itemsBasedOnView = useMemo(
-    () => (view === "full" ? items : items.slice(0, 3)),
-    [items, view],
+  const paymentsBasedOnView = useMemo(
+    () =>
+      view === "full" ? data?.payments : data?.payments?.slice(0, 3) ?? [],
+    [view, data?.payments],
   );
   const totalPaid = useMemo(
-    () => items.reduce((total, item) => total + (item.quantity ?? 0), 0),
-    [items],
+    () =>
+      data?.payments?.reduce(
+        (total, payment) => (total += payment.quantity),
+        0,
+      ) ?? 0,
+    [data?.payments],
   );
-  const settled = useMemo(() => totalPaid >= total, [totalPaid, total]);
-  const totalFormatted = useMemo(() => formatCurrency(total), [total]);
+  const settled = useMemo(
+    () => totalPaid >= (data?.totalOwed ?? 0),
+    [totalPaid, data?.totalOwed],
+  );
+  const totalFormatted = useMemo(
+    () => formatCurrency(data?.totalOwed ?? 0),
+    [data?.totalOwed],
+  );
   const paidFormatted = useMemo(() => formatCurrency(totalPaid), [totalPaid]);
 
-  const willExpireSoon = !!expiry && expiresSoon(expiry);
+  const willExpireSoon = !!data?.expiry && expiresSoon(data.expiry.toDate());
+
+  if (fetching) return <Loading />;
+
+  if (!data) return <Text.H1>No bill data</Text.H1>;
 
   return (
     <>
@@ -61,7 +73,7 @@ export const Bill = ({
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
         <TitleBasedOnView>
-          {title}
+          {data?.title}
           {willExpireSoon && (
             <>
               {" "}
@@ -75,10 +87,10 @@ export const Bill = ({
         </TitleBasedOnView>
         {view === "full" && (
           <>
-            {description && (
+            {data.description && (
               <Card shadow>
                 <Text.H2>Description</Text.H2>
-                <Text.Span>{description}</Text.Span>
+                <Text.Span>{data.description}</Text.Span>
               </Card>
             )}
 
@@ -93,10 +105,10 @@ export const Bill = ({
               </View>
             </Card>
 
-            {!!expiry && (
+            {!!data.expiry && (
               <Card shadow>
                 <Text.H2>Due date</Text.H2>
-                <Text.Body>{formatToDate(expiry)}</Text.Body>
+                <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
               </Card>
             )}
           </>
@@ -107,16 +119,19 @@ export const Bill = ({
               gap: gap.sm,
             }}
           >
-            {itemsBasedOnView.map((item) => (
-              <ListItem
-                key={item.id}
-                {...item}
-                title={`Paid ${formatCurrency(item.quantity!)}`}
-                quantity={undefined}
-                quantitySymbol={undefined}
-                onItemPress={view === "full" ? onItemPress : undefined}
-              />
-            ))}
+            {!!paymentsBasedOnView &&
+              paymentsBasedOnView.map((payment) => (
+                <ListItem
+                  key={payment.id}
+                  title={`Paid ${formatCurrency(payment.quantity!)}`}
+                  quantitySymbol={"£"}
+                  onItemPress={
+                    view === "full" && onItemPress
+                      ? () => onItemPress(payment)
+                      : undefined
+                  }
+                />
+              ))}
           </Div>
         ) : (
           <Div

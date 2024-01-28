@@ -9,39 +9,41 @@ import { colors } from "~/constants/colors";
 import { useMemo } from "react";
 import { View } from "react-native";
 import { expiresSoon, formatToDate } from "~/util";
+import { useListData } from "~/hooks/useListData";
+import { Loading } from "~/components/app/Loading";
 
 type ListProps = {
-  items: Omit<Parameters<typeof ListItem>[0], "onItemPress">[];
-  title: string;
-  description?: string;
-  expiry?: Date;
+  eventId: string;
+  listId: string;
+
+  onItemPress?: () => any;
   view?: "full";
   linkProps?: LinkProps<any>;
-} & Pick<Parameters<typeof ListItem>[0], "onItemPress">;
+};
 
 export const List = ({
-  items,
-  title,
-  description,
-  expiry,
+  eventId,
+  listId,
   view,
-  linkProps,
   onItemPress,
+  linkProps,
 }: ListProps) => {
+  const { fetching, data } = useListData({ eventId, listId });
+
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
     [view],
   );
   const itemsBasedOnView = useMemo(
-    () => (view === "full" ? items : items.slice(0, 3)),
-    [items, view],
+    () => (view === "full" ? data?.items : data?.items?.slice(0, 3)) ?? [],
+    [data?.items, view],
   );
   const allItemsWithAnAssignee = useMemo(
-    () => items.filter(({ assignee }) => !!assignee),
-    [items],
+    () => data?.items?.filter(({ userId }) => !!userId) ?? [],
+    [data?.items],
   );
   const assigneesDeduped = useMemo(
-    () => [...new Set(allItemsWithAnAssignee.map(({ assignee }) => assignee))],
+    () => [...new Set(allItemsWithAnAssignee.map(({ userId }) => userId))],
     [allItemsWithAnAssignee],
   );
   const totalAssignees = useMemo(
@@ -49,8 +51,8 @@ export const List = ({
     [assigneesDeduped],
   );
   const allStatuses = useMemo(
-    () => [...new Set(items.map(({ status }) => status))],
-    [items],
+    () => [...(new Set(data?.items?.map(({ status }) => status)) ?? [])],
+    [data?.items],
   );
 
   const statusIcon = useMemo(() => {
@@ -69,7 +71,11 @@ export const List = ({
     return <Entypo name="progress-one" size={24} color={colors.primary} />;
   }, [allStatuses]);
 
-  const willExpireSoon = !!expiry && expiresSoon(expiry);
+  const willExpireSoon = !!data?.expiry && expiresSoon(data.expiry.toDate());
+
+  if (fetching) return <Loading />;
+
+  if (!data) return <Text.H1>No list data</Text.H1>;
 
   return (
     <Card
@@ -78,7 +84,7 @@ export const List = ({
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
       <TitleBasedOnView>
-        {title}{" "}
+        {data.title}{" "}
         {willExpireSoon && (
           <>
             {" "}
@@ -90,10 +96,10 @@ export const List = ({
           </>
         )}
       </TitleBasedOnView>
-      {view === "full" && !!description && (
+      {view === "full" && !!data.description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>
-          <Text.Span>{description}</Text.Span>
+          <Text.Span>{data.description}</Text.Span>
         </Card>
       )}
 
@@ -121,7 +127,7 @@ export const List = ({
           }}
         >
           <Div>
-            <Text.Body>{items.length} items</Text.Body>
+            <Text.Body>{data.items.length} items</Text.Body>
             {!!totalAssignees ? (
               <Text.Span>
                 {totalAssignees} assignee{totalAssignees > 1 ? "s" : ""}
@@ -135,10 +141,10 @@ export const List = ({
         </Div>
       )}
 
-      {view === "full" && !!expiry && (
+      {view === "full" && !!data.expiry && (
         <Card shadow>
           <Text.H2>Due date</Text.H2>
-          <Text.Body>{formatToDate(expiry)}</Text.Body>
+          <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
         </Card>
       )}
 
