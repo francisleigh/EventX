@@ -4,6 +4,8 @@ export const EventSchema = z.object({
   type: z.union([z.literal("poll"), z.literal("bill"), z.literal("list")]),
   title: z.string(),
   description: z.string().optional(),
+
+  expiry: z.date().optional(),
 });
 export type EventSchemaType = z.infer<typeof EventSchema>;
 
