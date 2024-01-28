@@ -149,6 +149,7 @@ export const List = ({
       )}
 
       {!!linkProps && view !== "full" && (
+        // @ts-ignore
         <Link {...linkProps}>
           <Div
             style={{

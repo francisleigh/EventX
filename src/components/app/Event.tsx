@@ -115,6 +115,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
       )}
 
       {!!linkProps && view !== "full" && (
+        // @ts-ignore
         <Link {...linkProps}>
           <Div
             style={{

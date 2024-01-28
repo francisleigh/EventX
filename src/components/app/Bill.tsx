@@ -127,7 +127,7 @@ export const Bill = ({
                   quantitySymbol={"£"}
                   onItemPress={
                     view === "full" && onItemPress
-                      ? () => onItemPress(payment)
+                      ? () => onItemPress()
                       : undefined
                   }
                 />
@@ -152,6 +152,7 @@ export const Bill = ({
         )}
 
         {!!linkProps && view !== "full" && (
+          // @ts-ignore
           <Link {...linkProps}>
             <Div
               style={{

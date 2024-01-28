@@ -7,10 +7,13 @@ import {
   PollOptionDocument,
   PollRootDocument,
   PollVoterDocument,
-  ClientPollDocument,
 } from "~/types.firestore";
 import { Timestamp } from "@react-native-firebase/firestore/lib/modular/Timestamp";
-import { ClientBillDocument, ClientListDocument } from "~/types.client";
+import {
+  ClientBillDocument,
+  ClientListDocument,
+  ClientPollDocument,
+} from "~/types.client";
 
 export type EventsDb = {
   [key in string]: EventDocument;
@@ -191,7 +194,7 @@ export const getPoll = async (
       if (eventItems) {
         const poll = eventItems[pollId];
         if (poll) {
-          res(poll);
+          res(poll as ClientPollDocument);
         } else {
           rej(`Could not find poll item from id ${pollId}`);
         }
@@ -246,7 +249,7 @@ export const getBill = async (
       if (eventItems) {
         const bill = eventItems[billId];
         if (bill) {
-          res(bill);
+          res(bill as ClientBillDocument);
         } else {
           rej(`Could not find bill item from id ${billId}`);
         }
@@ -308,7 +311,7 @@ export const getList = async (
       if (eventItems) {
         const list = eventItems[listId];
         if (list) {
-          res(list);
+          res(list as ClientListDocument);
         } else {
           rej(`Could not find list item from id ${listId}`);
         }

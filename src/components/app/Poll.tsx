@@ -20,6 +20,7 @@ import { expiresSoon, formatToDate } from "~/util";
 import { Avatar } from "~/components/app/Avatar";
 import { usePollData } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
+import { ClientPollDocument } from "~/types.client";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -58,7 +59,7 @@ const dotTextStylesByVote = StyleSheet.create({
   },
 });
 
-const handleOpenLink = async (item) => {
+const handleOpenLink = async (item: ClientPollDocument["options"][number]) => {
   if (await Linking.canOpenURL(item.link!)) {
     await Linking.openURL(item.link!);
   }
@@ -68,7 +69,7 @@ type PollProps = {
   eventId: string;
   pollId: string;
 
-  onItemPress?: (item) => any;
+  onItemPress?: () => any;
 
   view?: "full";
   linkProps?: LinkProps<any>;
@@ -183,6 +184,7 @@ export const Poll = ({
           <Text.Span>{data.description}</Text.Span>
         </Card>
       )}
+
       {optionsBasedOnView?.map((option) => {
         const optionVotes = getVoteCountForOption(option.id);
         const [dotStyle, dotTextStyle] = getDotStylesFromVotes(optionVotes);
@@ -190,7 +192,7 @@ export const Poll = ({
         return (
           <TouchableOpacity
             key={option.id}
-            onPress={() => onItemPress && onItemPress(option)}
+            onPress={() => onItemPress && onItemPress()}
             activeOpacity={onItemPress ? undefined : 1}
             style={[
               {
