@@ -270,6 +270,7 @@ export const Poll = ({
         </>
       )}
       {!!linkProps && view !== "full" && (
+        // @ts-ignore
         <Link {...linkProps}>
           <Div
             style={{

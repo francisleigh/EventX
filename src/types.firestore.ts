@@ -11,7 +11,6 @@ import {
 } from "~/types.schema";
 
 type Timestamp = FirebaseFirestoreTypes.Timestamp;
-export type EventItemType = "poll" | "list" | "bill";
 
 /**
  * @description All event item documents have this.
@@ -42,6 +41,7 @@ export type PollOptionDocument = {} & PollOptionSchemaType;
 export type PollVoterDocument = {} & PollVoterSchemaType;
 export type PollRootDocument = {
   type: "poll";
+  expiry: Timestamp;
 } & PollSchemaType;
 
 /**
@@ -50,8 +50,10 @@ export type PollRootDocument = {
 export type BillPaymentDocument = {
   userId: string;
 } & BillPaymentSchemaType;
+
 export type BillRootDocument = {
   type: "bill";
+  expiry: Timestamp;
 } & BillSchemaType;
 
 /**
@@ -60,6 +62,8 @@ export type BillRootDocument = {
 export type ListItemDocument = {
   userId?: string;
 } & ListItemSchemaType;
+
 export type ListRootDocument = {
   type: "list";
+  expiry: Timestamp;
 } & ListSchemaType;
