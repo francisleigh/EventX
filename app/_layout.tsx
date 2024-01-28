@@ -6,6 +6,15 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
         <Stack.Screen name="index" options={{ header: () => null }} />
+
+        <Stack.Screen
+          name="new-event"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
+
         <Stack.Screen
           name="event"
           options={{

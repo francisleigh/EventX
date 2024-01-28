@@ -6,6 +6,7 @@ import { Button } from "~/components/core/Button";
 import { BottomSheetExample } from "~/components/BottomSheetExample";
 import { Event } from "~/components/app/Event";
 import { Loading } from "~/components/app/Loading";
+import { Link } from "expo-router";
 
 export default function Page() {
   const [fetchingEvents, setFetchingEvents] = useState<boolean>(true);
@@ -40,6 +41,15 @@ export default function Page() {
         <Button icon={<Text.Button>+</Text.Button>}>Add new event</Button>
 
         {/*<BottomSheetExample />*/}
+
+        <Link
+          href={{
+            pathname: "/new-event",
+          }}
+          asChild
+        >
+          <Button>New event</Button>
+        </Link>
       </PageContainer>
     </>
   );

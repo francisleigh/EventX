@@ -1,4 +1,14 @@
 import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import {
+  BillPaymentSchemaType,
+  BillSchemaType,
+  EventSchemaType,
+  ListItemSchemaType,
+  ListSchemaType,
+  PollOptionSchemaType,
+  PollSchemaType,
+  PollVoterSchemaType,
+} from "~/types.schema";
 
 type Timestamp = FirebaseFirestoreTypes.Timestamp;
 export type EventItemType = "poll" | "list" | "bill";
@@ -7,16 +17,12 @@ export type EventItemType = "poll" | "list" | "bill";
  * @description All event item documents have this.
  * */
 export type EventItemBase = {
-  type: EventItemType;
-  title: string;
-  description?: string;
-
   created: Timestamp;
   updated?: Timestamp;
   expiry?: Timestamp;
 
   threadId?: string;
-};
+} & EventSchemaType;
 
 /**
  * @description Event item (parent)
@@ -32,42 +38,28 @@ export type EventDocument = {
 /**
  * @description Poll type items
  * */
-export type PollOptionDocument = {
-  label: string;
-  link?: string;
-};
-export type PollVoterDocument = {
-  userId: string;
-};
+export type PollOptionDocument = {} & PollOptionSchemaType;
+export type PollVoterDocument = {} & PollVoterSchemaType;
 export type PollRootDocument = {
   type: "poll";
-} & EventItemBase;
+} & PollSchemaType;
 
 /**
  * @description Bill type items
  * */
 export type BillPaymentDocument = {
   userId: string;
-  quantity: number;
-};
+} & BillPaymentSchemaType;
 export type BillRootDocument = {
   type: "bill";
-
-  totalOwed: number;
-  currency: string;
-} & EventItemBase;
+} & BillSchemaType;
 
 /**
  * @description List type items
  * */
 export type ListItemDocument = {
   userId?: string;
-
-  title: string;
-  quantity?: number;
-
-  status: "pending" | "done";
-};
+} & ListItemSchemaType;
 export type ListRootDocument = {
   type: "list";
-} & EventItemBase;
+} & ListSchemaType;

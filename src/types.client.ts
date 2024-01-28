@@ -2,7 +2,6 @@ import {
   BillPaymentDocument,
   BillRootDocument,
   EventDocument,
-  EventItemBase,
   ListItemDocument,
   ListRootDocument,
   PollOptionDocument,
