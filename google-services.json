@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "410380259796",
+    "project_id": "eventx-95742",
+    "storage_bucket": "eventx-95742.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410380259796:android:02a831ae5fb0c86895c641",
+        "android_client_info": {
+          "package_name": "com.francisleigh.eventx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeU3sp6f_IDVZZYP8HXAl-6p0lcUGfsjI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
