@@ -38,7 +38,6 @@ export default function Page() {
             ))
           )}
         </PageContainer.InnerContent>
-        <Button icon={<Text.Button>+</Text.Button>}>Add new event</Button>
 
         {/*<BottomSheetExample />*/}
 
@@ -48,7 +47,7 @@ export default function Page() {
           }}
           asChild
         >
-          <Button>New event</Button>
+          <Button icon={<Text.Button>+</Text.Button>}>New event</Button>
         </Link>
       </PageContainer>
     </>

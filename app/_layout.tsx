@@ -14,6 +14,13 @@ export default function Layout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="new-event-item"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
 
         <Stack.Screen
           name="event"

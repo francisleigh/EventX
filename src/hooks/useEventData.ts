@@ -1,6 +1,6 @@
 import { ClientEventDocument } from "~/types.client";
 import { useEffect, useState } from "react";
-import { getEvent, getEventItems } from "~/tempdb";
+import { getEvent, getEventItems } from "~/db";
 
 type RTN = {
   fetching: boolean;
@@ -15,6 +15,8 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
     setFetching(true);
     try {
       const event = await getEvent(eventId);
+      if (!event) return;
+
       const eventItems = await getEventItems(eventId);
 
       const eventData: RTN["data"] = {

@@ -12,6 +12,7 @@ import { Poll } from "~/components/app/Poll";
 import { Loading } from "~/components/app/Loading";
 import { Bill } from "~/components/app/Bill";
 import { List } from "~/components/app/List";
+import { Button } from "~/components/core/Button";
 
 type EventProps = {
   eventId: string;
@@ -32,7 +33,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
   if (!data) return <Text.H1>No event data</Text.H1>;
 
   const willExpireSoon = !!data.start && expiresSoon(data.start.toDate());
-
+  const noItems = [...data.polls, ...data.bills, ...data.lists].length === 0;
   return (
     <Card
       variant={willExpireSoon ? "error" : undefined}
@@ -62,14 +63,29 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
             </Card>
           )}
 
-          {!!data.start.toDate() && (
+          {!!data.start?.toDate && (
             <Card shadow>
               <Text.H2>Event date</Text.H2>
               <Text.Body>{formatToDate(data.start.toDate())}</Text.Body>
             </Card>
           )}
 
-          <Text.H1>Items</Text.H1>
+          {noItems ? (
+            <Link
+              href={{
+                pathname: "/new-event-item",
+                params: {
+                  eventId,
+                },
+              }}
+              asChild
+            >
+              <Button icon={<Text.Button>+</Text.Button>}>New item</Button>
+            </Link>
+          ) : (
+            <Text.H1>Items</Text.H1>
+          )}
+
           {data.polls.map((poll) => (
             <Poll
               key={`event_${data.id}_poll_${poll.id}`}

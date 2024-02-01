@@ -96,7 +96,9 @@ Base.Button = ({
   style,
   color,
   ...props
-}: TextProps & { color?: (typeof colors)[keyof typeof colors] }) => {
+}: TextProps & {
+  color?: (typeof colors)[keyof typeof colors] | "transparent";
+}) => {
   return (
     <RNText
       style={[

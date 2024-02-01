@@ -1,67 +1,96 @@
 import { useForm, Controller } from "react-hook-form";
 import { EventSchema, EventSchemaType } from "~/types.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput, View } from "react-native";
 import { Button } from "~/components/core/Button";
-import { gap } from "~/constants/spacing";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { TextArea, TextInput } from "~/components/core/FormElements";
+import { createNewEvent } from "~/db";
+import { ErrorBox } from "~/components/app/ErrorBox";
+import { useRouter } from "expo-router";
+import { temp_userid } from "~/tempuser";
 
 export const NewEventForm = () => {
   const { control, handleSubmit } = useForm<EventSchemaType>({
-    defaultValues: {},
+    defaultValues: {
+      owner: temp_userid,
+      title: "Holiday 2024",
+      description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry.`,
+    },
     resolver: zodResolver(EventSchema),
   });
+  const router = useRouter();
 
-  const submit = useCallback((formValues: EventSchemaType) => {
-    console.log("form values", formValues);
-  }, []);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submissionError, setSubmissionError] = useState<string | undefined>();
+
+  const submit = useCallback(
+    async (formValues: EventSchemaType) => {
+      console.log("form values", formValues);
+
+      setSubmissionError(undefined);
+      setSubmitting(true);
+      try {
+        const newEventId = await createNewEvent(formValues);
+
+        console.log("New event", newEventId);
+        router.replace({ pathname: "/event", params: { id: newEventId } });
+      } catch (e) {
+        console.log("NewEventForm error", e);
+        setSubmissionError("Error trying to create event");
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [setSubmitting, setSubmissionError],
+  );
 
   return (
     <>
-      <Controller
-        control={control}
-        name={"type"}
-        render={({ field }) => (
-          <View
-            style={{ flexDirection: "row", gap: gap.xs, alignItems: "center" }}
-          >
-            <View style={{ flex: 1 }}>
-              <Button
-                selected={field.value == "poll"}
-                onPress={() => field.onChange("poll")}
-              >
-                Poll
-              </Button>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Button
-                selected={field.value == "bill"}
-                onPress={() => field.onChange("bill")}
-              >
-                Bill
-              </Button>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Button
-                selected={field.value == "list"}
-                onPress={() => field.onChange("list")}
-              >
-                List
-              </Button>
-            </View>
-          </View>
-        )}
-      />
+      {/*<Controller*/}
+      {/*  control={control}*/}
+      {/*  name={"type"}*/}
+      {/*  render={({ field }) => (*/}
+      {/*    <View*/}
+      {/*      style={{ flexDirection: "row", gap: gap.xs, alignItems: "center" }}*/}
+      {/*    >*/}
+      {/*      <View style={{ flex: 1 }}>*/}
+      {/*        <Button*/}
+      {/*          selected={field.value == "poll"}*/}
+      {/*          onPress={() => field.onChange("poll")}*/}
+      {/*        >*/}
+      {/*          Poll*/}
+      {/*        </Button>*/}
+      {/*      </View>*/}
+      {/*      <View style={{ flex: 1 }}>*/}
+      {/*        <Button*/}
+      {/*          selected={field.value == "bill"}*/}
+      {/*          onPress={() => field.onChange("bill")}*/}
+      {/*        >*/}
+      {/*          Bill*/}
+      {/*        </Button>*/}
+      {/*      </View>*/}
+      {/*      <View style={{ flex: 1 }}>*/}
+      {/*        <Button*/}
+      {/*          selected={field.value == "list"}*/}
+      {/*          onPress={() => field.onChange("list")}*/}
+      {/*        >*/}
+      {/*          List*/}
+      {/*        </Button>*/}
+      {/*      </View>*/}
+      {/*    </View>*/}
+      {/*  )}*/}
+      {/*/>*/}
 
       <Controller
         control={control}
         name={"title"}
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <TextInput
             placeholder={"Title"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
+            error={fieldState.error?.message}
           />
         )}
       />
@@ -69,19 +98,22 @@ export const NewEventForm = () => {
       <Controller
         control={control}
         name={"description"}
-        render={({ field }) => (
-          <TextInput
+        render={({ field, fieldState }) => (
+          <TextArea
             placeholder={"Description"}
-            multiline
-            numberOfLines={10}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
+            error={fieldState.error?.message}
           />
         )}
       />
 
-      <Button onPress={handleSubmit(submit)}>Create</Button>
+      {!!submissionError && <ErrorBox error={submissionError} />}
+
+      <Button busy={submitting} onPress={handleSubmit(submit)}>
+        Create
+      </Button>
     </>
   );
 };

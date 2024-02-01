@@ -2,7 +2,7 @@ import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import {
   BillPaymentSchemaType,
   BillSchemaType,
-  EventSchemaType,
+  EventItemSchemaType,
   ListItemSchemaType,
   ListSchemaType,
   PollOptionSchemaType,
@@ -21,14 +21,14 @@ export type EventItemBase = {
   expiry?: Timestamp;
 
   threadId?: string;
-} & EventSchemaType;
+} & EventItemSchemaType;
 
 /**
  * @description Event item (parent)
  * */
 export type EventDocument = {
-  start: Timestamp;
-  end: Timestamp;
+  start?: Timestamp;
+  end?: Timestamp;
 } & Pick<
   EventItemBase,
   "title" | "description" | "created" | "updated" | "threadId"
