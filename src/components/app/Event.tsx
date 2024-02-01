@@ -34,6 +34,8 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
   const willExpireSoon = !!data.start && expiresSoon(data.start.toDate());
   const noItems = [...data.polls, ...data.bills, ...data.lists].length === 0;
+
+  console.log("items", data.polls);
   return (
     <Card
       variant={willExpireSoon ? "error" : undefined}

@@ -157,6 +157,8 @@ export const Poll = ({
 
   if (!data) return <Text.H1>No poll data</Text.H1>;
 
+  console.log("poll dat", data);
+
   const willExpireSoon = !!data.expiry && expiresSoon(data.expiry.toDate());
 
   return (

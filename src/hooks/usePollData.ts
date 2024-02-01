@@ -1,6 +1,8 @@
 import { ClientPollDocument } from "~/types.client";
 import { useCallback, useEffect, useState } from "react";
 import { getPoll, getPollOptions, getPollVoters } from "~/tempdb";
+import { getEventItem } from "~/db";
+import { PollRootDocument } from "~/types.firestore";
 
 type RTN = {
   fetching: boolean;
@@ -21,7 +23,12 @@ export const usePollData = ({
   const getData = async () => {
     setFetching(true);
     try {
-      const poll = await getPoll(eventId, pollId);
+      const poll = (await getEventItem(
+        eventId,
+        pollId,
+      )) as unknown as PollRootDocument;
+
+      console.log("poll beth", poll);
 
       const nextData: RTN["data"] = {
         ...poll,
@@ -31,23 +38,23 @@ export const usePollData = ({
         voters: [],
       };
 
-      const pollOptions = await getPollOptions(pollId);
-      if (pollOptions)
-        nextData.options = Object.entries(pollOptions).map(
-          ([optionId, option]) => ({ id: optionId, ...option }),
-        );
-
-      const pollVoters = await getPollVoters(pollId);
-      if (pollVoters)
-        nextData.voters = Object.entries(pollVoters).flatMap(
-          ([optionId, votes]) => {
-            return Object.entries(votes).map(([voteId, vote]) => ({
-              optionId,
-              id: voteId,
-              userId: vote.userId,
-            }));
-          },
-        );
+      // const pollOptions = await getPollOptions(pollId);
+      // if (pollOptions)
+      //   nextData.options = Object.entries(pollOptions).map(
+      //     ([optionId, option]) => ({ id: optionId, ...option }),
+      //   );
+      //
+      // const pollVoters = await getPollVoters(pollId);
+      // if (pollVoters)
+      //   nextData.voters = Object.entries(pollVoters).flatMap(
+      //     ([optionId, votes]) => {
+      //       return Object.entries(votes).map(([voteId, vote]) => ({
+      //         optionId,
+      //         id: voteId,
+      //         userId: vote.userId,
+      //       }));
+      //     },
+      //   );
 
       setData(nextData);
     } catch (e) {

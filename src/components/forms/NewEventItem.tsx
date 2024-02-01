@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useState } from "react";
 import { TextArea, TextInput } from "~/components/core/FormElements";
-import {} from "~/db";
+import { createEventItem } from "~/db";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
@@ -31,9 +31,15 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
       setSubmissionError(undefined);
       setSubmitting(true);
       try {
-        // const newEventItemId = await createNewEvent(formValues);
-        // console.log("New event", newEventId);
-        // router.replace({ pathname: "/event-item", params: { id: newEventItemId } });
+        const { type, id: newEventItemId } = await createEventItem(
+          eventId,
+          formValues,
+        );
+        console.log("New event item", type, newEventItemId);
+        router.replace({
+          pathname: `/${type}`,
+          params: { id: newEventItemId, eventId },
+        });
       } catch (e) {
         console.log("NewEventItemForm error", e);
         setSubmissionError("Error trying to create event item");

@@ -1,19 +1,20 @@
 import { Text } from "~/components/core/Text";
 import { PageContainer } from "~/components/core/Layout";
 import { useEffect, useMemo, useState } from "react";
-import { getEvents } from "~/tempdb";
 import { Button } from "~/components/core/Button";
 import { BottomSheetExample } from "~/components/BottomSheetExample";
 import { Event } from "~/components/app/Event";
 import { Loading } from "~/components/app/Loading";
 import { Link } from "expo-router";
+import { getEvents } from "~/db";
+import { temp_userid } from "~/tempuser";
 
 export default function Page() {
   const [fetchingEvents, setFetchingEvents] = useState<boolean>(true);
-  const [events, setEvents] = useState<Awaited<typeof getEvents> | {}>({});
+  const [events, setEvents] = useState<Awaited<typeof getEvents>>();
 
   useEffect(() => {
-    getEvents()
+    getEvents(temp_userid)
       .then(setEvents)
       .finally(() => setFetchingEvents(false));
   }, [setEvents]);
@@ -27,12 +28,12 @@ export default function Page() {
           {fetchingEvents ? (
             <Loading />
           ) : (
-            Object.entries(events).map(([eventId, event]) => (
+            events?.map((event) => (
               <Event
-                key={eventId}
-                eventId={eventId}
+                key={event.id}
+                eventId={event.id}
                 linkProps={{
-                  href: { pathname: "/event", params: { id: eventId } },
+                  href: { pathname: "/event", params: { id: event.id } },
                 }}
               />
             ))

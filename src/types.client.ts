@@ -9,7 +9,7 @@ import {
   PollVoterDocument,
 } from "~/types.firestore";
 
-type WithID<T extends {}> = T & { id: string };
+export type WithID<T extends {}> = T & { id: string };
 
 export type ClientEventDocument = WithID<
   {

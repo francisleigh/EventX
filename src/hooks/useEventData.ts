@@ -19,6 +19,8 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
 
       const eventItems = await getEventItems(eventId);
 
+      console.log("EVENT ITEMS", eventItems);
+
       const eventData: RTN["data"] = {
         id: eventId,
         ...event,
@@ -27,16 +29,16 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
         lists: [],
       };
 
-      Object.entries(eventItems).forEach(([itemId, item]) => {
+      eventItems.forEach((item) => {
         switch (item.type) {
           case "poll":
-            eventData.polls!.push({ ...item, id: itemId });
+            eventData.polls!.push(item);
             break;
           case "bill":
-            eventData.bills!.push({ ...item, id: itemId });
+            eventData.bills!.push(item);
             break;
           case "list":
-            eventData.lists!.push({ ...item, id: itemId });
+            eventData.lists!.push(item);
             break;
         }
       });
