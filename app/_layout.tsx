@@ -21,6 +21,13 @@ export default function Layout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="new-poll-option"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
 
         <Stack.Screen
           name="event"
@@ -32,21 +39,18 @@ export default function Layout() {
           name="list"
           options={{
             header: () => null,
-            presentation: "modal",
           }}
         />
         <Stack.Screen
           name="poll"
           options={{
             header: () => null,
-            presentation: "modal",
           }}
         />
         <Stack.Screen
           name="bill"
           options={{
             header: () => null,
-            presentation: "modal",
           }}
         />
       </Stack>

@@ -14,7 +14,7 @@ export default function BillPage() {
 
   return (
     <>
-      <PageContainer edges={["bottom", "left", "right"]}>
+      <PageContainer>
         <Bill
           view={"full"}
           eventId={params.eventId as string}

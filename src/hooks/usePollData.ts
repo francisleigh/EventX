@@ -1,7 +1,7 @@
 import { ClientPollDocument } from "~/types.client";
 import { useCallback, useEffect, useState } from "react";
-import { getPoll, getPollOptions, getPollVoters } from "~/tempdb";
-import { getEventItem } from "~/db";
+import { getPoll, getPollVoters } from "~/tempdb";
+import { getEventItem, getPollOptions } from "~/db";
 import { PollRootDocument } from "~/types.firestore";
 
 type RTN = {
@@ -28,8 +28,6 @@ export const usePollData = ({
         pollId,
       )) as unknown as PollRootDocument;
 
-      console.log("poll beth", poll);
-
       const nextData: RTN["data"] = {
         ...poll,
         type: "poll",
@@ -38,12 +36,9 @@ export const usePollData = ({
         voters: [],
       };
 
-      // const pollOptions = await getPollOptions(pollId);
-      // if (pollOptions)
-      //   nextData.options = Object.entries(pollOptions).map(
-      //     ([optionId, option]) => ({ id: optionId, ...option }),
-      //   );
-      //
+      const pollOptions = await getPollOptions(eventId, pollId);
+      if (pollOptions) nextData.options = pollOptions;
+
       // const pollVoters = await getPollVoters(pollId);
       // if (pollVoters)
       //   nextData.voters = Object.entries(pollVoters).flatMap(

@@ -21,6 +21,7 @@ import { Avatar } from "~/components/app/Avatar";
 import { usePollData } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
 import { ClientPollDocument } from "~/types.client";
+import { Button } from "~/components/core/Button";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -90,6 +91,8 @@ export const Poll = ({
     () => (view === "full" ? Text.H1 : Text.H2),
     [view],
   );
+
+  console.log("poll data", data);
 
   const optionsBasedOnView =
     view === "full" ? data?.options : data?.options?.slice(0, 3);
@@ -263,12 +266,25 @@ export const Poll = ({
             </Card>
           )}
 
-          {view === "full" && !!data?.expiry && (
+          {!!data?.expiry && (
             <Card shadow>
               <Text.H2>Due date</Text.H2>
               <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
             </Card>
           )}
+
+          <Link
+            href={{
+              pathname: "/new-poll-option",
+              params: {
+                eventId,
+                pollId: data.id,
+              },
+            }}
+            asChild
+          >
+            <Button icon={<Text.Button>+</Text.Button>}>Add option</Button>
+          </Link>
         </>
       )}
       {!!linkProps && view !== "full" && (

@@ -23,7 +23,7 @@ export type EventItemSchemaType = z.infer<typeof EventItemSchema>;
 export const PollSchema = EventItemSchema.extend({});
 export const PollOptionSchema = z.object({
   label: z.string(),
-  link: z.string().optional(),
+  link: z.string().optional().default(""),
 });
 export const PollVoterSchema = z.object({
   userId: z.string(),

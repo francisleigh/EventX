@@ -11,7 +11,7 @@ export default function ListPage() {
   }
 
   return (
-    <PageContainer edges={["bottom", "left", "right"]}>
+    <PageContainer>
       <List
         view={"full"}
         eventId={params.eventId as string}

@@ -1,4 +1,8 @@
-import { EventItemSchemaType, EventSchemaType } from "~/types.schema";
+import {
+  EventItemSchemaType,
+  EventSchemaType,
+  PollOptionSchemaType,
+} from "~/types.schema";
 import { firestore } from "~/backend";
 import {
   addDoc,
@@ -14,6 +18,7 @@ import {
   BillRootDocument,
   EventDocument,
   ListRootDocument,
+  PollOptionDocument,
   PollRootDocument,
 } from "~/types.firestore";
 import { query } from "@firebase/database";
@@ -87,4 +92,43 @@ export const getEventItem = async (eventId: string, eventItemId: string) => {
   const getDocReturn = await getDoc(docRef);
 
   return { ...getDocReturn.data(), id: getDocReturn.id };
+};
+
+export const getPollOptions = async (eventId: string, pollId: string) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    pollId,
+    "options",
+  );
+  const docs = await getDocs(ref);
+
+  if (docs.empty) return [];
+
+  return docs.docs.map((d) => {
+    const data = d.data() as PollOptionDocument;
+    return {
+      ...data,
+      id: d.id,
+    };
+  });
+};
+export const addOptionToPoll = async (
+  eventId: string,
+  pollId: string,
+  data: PollOptionSchemaType,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    pollId,
+    "options",
+  );
+  const docRef = await addDoc(ref, data);
+
+  return docRef.id;
 };

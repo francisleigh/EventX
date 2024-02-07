@@ -1,6 +1,6 @@
 import { Text } from "~/components/core/Text";
 import { PageContainer } from "~/components/core/Layout";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/core/Button";
 import { BottomSheetExample } from "~/components/BottomSheetExample";
 import { Event } from "~/components/app/Event";
