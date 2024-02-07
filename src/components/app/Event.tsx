@@ -1,4 +1,4 @@
-import { Link, LinkProps } from "expo-router";
+import { Link, LinkProps, useRouter } from "expo-router";
 import { expiresSoon, formatToDate } from "~/util";
 import { Card } from "~/components/core/Layout";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,6 +13,9 @@ import { Loading } from "~/components/app/Loading";
 import { Bill } from "~/components/app/Bill";
 import { List } from "~/components/app/List";
 import { Button } from "~/components/core/Button";
+import { temp_userid } from "~/tempuser";
+import { TouchableOpacity } from "react-native";
+import { borderRadius } from "~/constants/borders";
 
 type EventProps = {
   eventId: string;
@@ -22,6 +25,7 @@ type EventProps = {
 
 export const Event = ({ eventId, view, linkProps }: EventProps) => {
   const { fetching, data } = useEventData({ eventId });
+  const router = useRouter();
 
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
@@ -32,10 +36,10 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
   if (!data) return <Text.H1>No event data</Text.H1>;
 
+  const canEdit = data.owner === temp_userid && view === "full";
   const willExpireSoon = !!data.start && expiresSoon(data.start.toDate());
   const noItems = [...data.polls, ...data.bills, ...data.lists].length === 0;
 
-  console.log("items", data.polls);
   return (
     <Card
       variant={willExpireSoon ? "error" : undefined}
@@ -70,6 +74,25 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
               <Text.H2>Event date</Text.H2>
               <Text.Body>{formatToDate(data.start.toDate())}</Text.Body>
             </Card>
+          )}
+
+          {canEdit && (
+            <Link
+              href={{ pathname: "/new-event", params: { eventId } }}
+              asChild
+            >
+              <Button
+                icon={
+                  <MaterialCommunityIcons
+                    name="pencil"
+                    size={24}
+                    color={colors.primary}
+                  />
+                }
+              >
+                Edit
+              </Button>
+            </Link>
           )}
 
           {noItems ? (

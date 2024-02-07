@@ -32,6 +32,18 @@ export const createNewEvent = async (data: EventSchemaType) => {
   return docRef.id;
 };
 
+export const updateExistingEvent = async (
+  eventId: ClientEventDocument["id"],
+  data: Partial<EventItemSchemaType>,
+): Promise<void> => {
+  console.log("update", eventId);
+  console.log("update", data);
+  const events = collection(firestore, "events");
+  const ref = doc(events, eventId);
+
+  await updateDoc(ref, data);
+};
+
 export const getEvents = async (userId: string) => {
   const q = query(
     collection(firestore, "events"),

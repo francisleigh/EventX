@@ -3,6 +3,7 @@ import {
   BillPaymentSchemaType,
   BillSchemaType,
   EventItemSchemaType,
+  EventSchemaType,
   ListItemSchemaType,
   ListSchemaType,
   PollOptionSchemaType,
@@ -32,7 +33,8 @@ export type EventDocument = {
 } & Pick<
   EventItemBase,
   "title" | "description" | "created" | "updated" | "threadId"
->;
+> &
+  Pick<EventSchemaType, "owner">;
 
 /**
  * @description Poll type items

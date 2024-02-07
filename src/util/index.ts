@@ -21,3 +21,22 @@ export const expiresSoon = (date: Date) => {
 export const hasExpired = (date: Date) => {
   return isAfter(new Date(), date);
 };
+
+export function removeUndefinedFields<T extends {}>(obj: T): T {
+  const result: Partial<T> = {};
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const value = obj[key];
+
+      if (
+        value !== undefined &&
+        !(Array.isArray(value) && value.length === 0)
+      ) {
+        result[key] = value;
+      }
+    }
+  }
+
+  return result as T;
+}

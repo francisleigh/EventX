@@ -4,15 +4,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useState } from "react";
 import { TextArea, TextInput } from "~/components/core/FormElements";
-import { createNewEvent } from "~/db";
+import { createNewEvent, updateExistingEvent } from "~/db";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { temp_userid } from "~/tempuser";
+import { removeUndefinedFields } from "~/util";
 
-export const NewEventForm = () => {
+type Props = {
+  eventId?: string;
+  defaultValues?: EventSchemaType;
+};
+
+export const NewEventForm = (props: Props) => {
   const { control, handleSubmit } = useForm<EventSchemaType>({
     defaultValues: {
       owner: temp_userid,
+      ...(props.defaultValues ?? {}),
     },
     resolver: zodResolver(EventSchema),
   });
@@ -21,25 +28,38 @@ export const NewEventForm = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submissionError, setSubmissionError] = useState<string | undefined>();
 
+  const isEditMode =
+    !!props.eventId &&
+    !!props.defaultValues &&
+    !!Object.keys(props.defaultValues).length;
+
   const submit = useCallback(
     async (formValues: EventSchemaType) => {
-      console.log("form values", formValues);
-
       setSubmissionError(undefined);
       setSubmitting(true);
-      try {
-        const newEventId = await createNewEvent(formValues);
 
-        console.log("New event", newEventId);
-        router.replace({ pathname: "/event", params: { id: newEventId } });
+      try {
+        if (isEditMode) {
+          await updateExistingEvent(
+            props.eventId as string,
+            removeUndefinedFields<typeof formValues>(formValues),
+          );
+          router.back();
+        } else {
+          const newEventId = await createNewEvent(formValues);
+          console.log("New event", newEventId);
+          router.replace({ pathname: "/event", params: { id: newEventId } });
+        }
       } catch (e) {
         console.log("NewEventForm error", e);
-        setSubmissionError("Error trying to create event");
+        setSubmissionError(
+          `Error trying to ${isEditMode ? "update" : "create"} event`,
+        );
       } finally {
         setSubmitting(false);
       }
     },
-    [setSubmitting, setSubmissionError],
+    [setSubmitting, setSubmissionError, isEditMode],
   );
 
   return (
@@ -75,7 +95,7 @@ export const NewEventForm = () => {
       {!!submissionError && <ErrorBox error={submissionError} />}
 
       <Button busy={submitting} onPress={handleSubmit(submit)}>
-        Create
+        {isEditMode ? "Save" : "Create"}
       </Button>
     </>
   );
