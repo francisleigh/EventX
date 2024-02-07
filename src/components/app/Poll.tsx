@@ -22,6 +22,7 @@ import { usePollData } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
 import { ClientPollDocument } from "~/types.client";
 import { Button } from "~/components/core/Button";
+import { PollOptionDocument } from "~/types.firestore";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -70,7 +71,7 @@ type PollProps = {
   eventId: string;
   pollId: string;
 
-  onItemPress?: () => any;
+  onOptionPress?: (option: PollOptionDocument) => any;
 
   view?: "full";
   linkProps?: LinkProps<any>;
@@ -80,7 +81,7 @@ export const Poll = ({
   eventId,
   pollId,
   linkProps,
-  onItemPress,
+  onOptionPress,
 }: PollProps) => {
   const { fetching, data, getVoteCountForOption } = usePollData({
     eventId,
@@ -197,8 +198,8 @@ export const Poll = ({
         return (
           <TouchableOpacity
             key={option.id}
-            onPress={() => onItemPress && onItemPress()}
-            activeOpacity={onItemPress ? undefined : 1}
+            onPress={() => onOptionPress && onOptionPress(option)}
+            activeOpacity={onOptionPress ? undefined : 1}
             style={[
               {
                 flexDirection: "row",
@@ -247,6 +248,19 @@ export const Poll = ({
 
       {view === "full" && (
         <>
+          <Link
+            href={{
+              pathname: "/new-poll-option",
+              params: {
+                eventId,
+                pollId: data.id,
+              },
+            }}
+            asChild
+          >
+            <Button icon={<Text.Button>+</Text.Button>}>Add option</Button>
+          </Link>
+
           {!!data?.voters?.length && (
             <Card shadow>
               <Text.H2>People</Text.H2>
@@ -272,19 +286,6 @@ export const Poll = ({
               <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
             </Card>
           )}
-
-          <Link
-            href={{
-              pathname: "/new-poll-option",
-              params: {
-                eventId,
-                pollId: data.id,
-              },
-            }}
-            asChild
-          >
-            <Button icon={<Text.Button>+</Text.Button>}>Add option</Button>
-          </Link>
         </>
       )}
       {!!linkProps && view !== "full" && (

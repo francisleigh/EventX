@@ -37,7 +37,7 @@ export default function PollPage() {
         view={"full"}
         eventId={params.eventId as string}
         pollId={params.id as string}
-        onItemPress={console.log}
+        onOptionPress={console.log}
       />
     </PageContainer>
   );
