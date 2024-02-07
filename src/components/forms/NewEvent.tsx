@@ -9,6 +9,7 @@ import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { temp_userid } from "~/tempuser";
 import { removeUndefinedFields } from "~/util";
+import { addDays } from "date-fns";
 
 type Props = {
   eventId?: string;
@@ -20,6 +21,8 @@ export const NewEventForm = (props: Props) => {
     defaultValues: {
       owner: temp_userid,
       ...(props.defaultValues ?? {}),
+      start: new Date(),
+      end: addDays(new Date(), 7),
     },
     resolver: zodResolver(EventSchema),
   });

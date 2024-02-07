@@ -10,11 +10,12 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { gap } from "~/constants/spacing";
 import { Text } from "~/components/core/Text";
+import { addDays } from "date-fns";
 
 export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
   const { control, handleSubmit } = useForm<EventItemSchemaType>({
     defaultValues: {
-      expiry: new Date(),
+      expiry: addDays(new Date(), 7),
     },
     resolver: zodResolver(EventItemSchema),
   });
