@@ -7,7 +7,8 @@ import { firestore } from "~/backend";
 import {
   addDoc,
   collection,
-  CollectionReference,
+  updateDoc,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -20,6 +21,7 @@ import {
   ListRootDocument,
   PollOptionDocument,
   PollRootDocument,
+  PollVoterDocument,
 } from "~/types.firestore";
 import { query } from "@firebase/database";
 
@@ -115,6 +117,28 @@ export const getPollOptions = async (eventId: string, pollId: string) => {
     };
   });
 };
+
+export const getPollVoters = async (eventId: string, pollId: string) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    pollId,
+    "voters",
+  );
+  const docs = await getDocs(ref);
+
+  if (docs.empty) return [];
+
+  return docs.docs.map((d) => {
+    const data = d.data() as PollVoterDocument;
+    return {
+      ...data,
+      id: d.id,
+    };
+  });
+};
 export const addOptionToPoll = async (
   eventId: string,
   pollId: string,
@@ -131,4 +155,46 @@ export const addOptionToPoll = async (
   const docRef = await addDoc(ref, data);
 
   return docRef.id;
+};
+
+export const voteForPollOption = async (
+  eventId: string,
+  pollId: string,
+  optionId: string,
+  userId: string,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    pollId,
+    "voters",
+  );
+  const existingVoterQuery = query(ref, where("userId", "==", userId));
+  const existingVoterQuerySnapshot = await getDocs(existingVoterQuery);
+
+  if (existingVoterQuerySnapshot.empty) {
+    const newVoteRef = await addDoc(ref, {
+      userId,
+      optionId,
+    } as PollVoterDocument);
+
+    return newVoteRef.id;
+  }
+
+  const voterDoc = existingVoterQuerySnapshot.docs[0];
+  const voterDocRef = voterDoc.ref;
+  const voterDocData = voterDoc.data() as PollVoterDocument;
+  if (voterDocData.optionId === optionId) {
+    await deleteDoc(voterDocRef);
+
+    return undefined;
+  } else {
+    await updateDoc(voterDocRef, {
+      optionId,
+    } as Partial<PollVoterDocument>);
+  }
+
+  return voterDocRef.id;
 };

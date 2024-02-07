@@ -27,6 +27,7 @@ export const PollOptionSchema = z.object({
 });
 export const PollVoterSchema = z.object({
   userId: z.string(),
+  optionId: z.string(),
 });
 
 export type PollSchemaType = z.infer<typeof PollSchema>;

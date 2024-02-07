@@ -16,13 +16,12 @@ import * as Linking from "expo-linking";
 import { colors } from "~/constants/colors";
 import { Link, LinkProps } from "expo-router";
 import { useCallback, useMemo } from "react";
-import { expiresSoon, formatToDate } from "~/util";
+import { expiresSoon, formatToDate, hasExpired } from "~/util";
 import { Avatar } from "~/components/app/Avatar";
-import { usePollData } from "~/hooks/usePollData";
+import { usePollData, usePollMutations } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
 import { ClientPollDocument } from "~/types.client";
 import { Button } from "~/components/core/Button";
-import { PollOptionDocument } from "~/types.firestore";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -71,7 +70,7 @@ type PollProps = {
   eventId: string;
   pollId: string;
 
-  onOptionPress?: (option: PollOptionDocument) => any;
+  onRefetchData?: () => any;
 
   view?: "full";
   linkProps?: LinkProps<any>;
@@ -81,19 +80,30 @@ export const Poll = ({
   eventId,
   pollId,
   linkProps,
-  onOptionPress,
+  onRefetchData,
 }: PollProps) => {
   const { fetching, data, getVoteCountForOption } = usePollData({
     eventId,
     pollId,
   });
+  const { mutating, optionBeingMutated, voteForOption } = usePollMutations({
+    eventId,
+    pollId,
+  });
+
+  const handleVoteForOption = useCallback(
+    async (optionId: string) => {
+      await voteForOption(optionId);
+
+      if (onRefetchData) onRefetchData();
+    },
+    [onRefetchData],
+  );
 
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
     [view],
   );
-
-  console.log("poll data", data);
 
   const optionsBasedOnView =
     view === "full" ? data?.options : data?.options?.slice(0, 3);
@@ -163,7 +173,9 @@ export const Poll = ({
 
   console.log("poll dat", data);
 
-  const willExpireSoon = !!data.expiry && expiresSoon(data.expiry.toDate());
+  const pollHasExpired = !!data.expiry && hasExpired(data.expiry.toDate());
+  const willExpireSoon =
+    !pollHasExpired && !!data.expiry && expiresSoon(data.expiry.toDate());
 
   return (
     <Card
@@ -198,8 +210,9 @@ export const Poll = ({
         return (
           <TouchableOpacity
             key={option.id}
-            onPress={() => onOptionPress && onOptionPress(option)}
-            activeOpacity={onOptionPress ? undefined : 1}
+            onPress={() => view === "full" && handleVoteForOption(option.id)}
+            activeOpacity={view === "full" ? undefined : 1}
+            disabled={mutating || pollHasExpired}
             style={[
               {
                 flexDirection: "row",
@@ -207,6 +220,7 @@ export const Poll = ({
                 alignItems: "center",
               },
               view !== "full" && { pointerEvents: "none" },
+              (mutating || pollHasExpired) && { opacity: 0.5 },
             ]}
           >
             <View
@@ -240,7 +254,11 @@ export const Poll = ({
                   {optionVotes}
                 </Text.Span>
               )}
-              <Dot style={[dotStyle, { borderWidth: 1 }]} />
+              {optionBeingMutated === option.id ? (
+                <Loading />
+              ) : (
+                <Dot style={[dotStyle, { borderWidth: 1 }]} />
+              )}
             </Div>
           </TouchableOpacity>
         );
@@ -248,18 +266,20 @@ export const Poll = ({
 
       {view === "full" && (
         <>
-          <Link
-            href={{
-              pathname: "/new-poll-option",
-              params: {
-                eventId,
-                pollId: data.id,
-              },
-            }}
-            asChild
-          >
-            <Button icon={<Text.Button>+</Text.Button>}>Add option</Button>
-          </Link>
+          {pollHasExpired ? null : (
+            <Link
+              href={{
+                pathname: "/new-poll-option",
+                params: {
+                  eventId,
+                  pollId: data.id,
+                },
+              }}
+              asChild
+            >
+              <Button icon={<Text.Button>+</Text.Button>}>Add option</Button>
+            </Link>
+          )}
 
           {!!data?.voters?.length && (
             <Card shadow>
@@ -283,7 +303,10 @@ export const Poll = ({
           {!!data?.expiry && (
             <Card shadow>
               <Text.H2>Due date</Text.H2>
-              <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
+              <Text.Body>
+                {formatToDate(data.expiry.toDate())}
+                {pollHasExpired && " - Ended"}
+              </Text.Body>
             </Card>
           )}
         </>

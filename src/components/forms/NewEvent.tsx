@@ -13,8 +13,6 @@ export const NewEventForm = () => {
   const { control, handleSubmit } = useForm<EventSchemaType>({
     defaultValues: {
       owner: temp_userid,
-      title: "Holiday 2024",
-      description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry.`,
     },
     resolver: zodResolver(EventSchema),
   });
@@ -46,41 +44,6 @@ export const NewEventForm = () => {
 
   return (
     <>
-      {/*<Controller*/}
-      {/*  control={control}*/}
-      {/*  name={"type"}*/}
-      {/*  render={({ field }) => (*/}
-      {/*    <View*/}
-      {/*      style={{ flexDirection: "row", gap: gap.xs, alignItems: "center" }}*/}
-      {/*    >*/}
-      {/*      <View style={{ flex: 1 }}>*/}
-      {/*        <Button*/}
-      {/*          selected={field.value == "poll"}*/}
-      {/*          onPress={() => field.onChange("poll")}*/}
-      {/*        >*/}
-      {/*          Poll*/}
-      {/*        </Button>*/}
-      {/*      </View>*/}
-      {/*      <View style={{ flex: 1 }}>*/}
-      {/*        <Button*/}
-      {/*          selected={field.value == "bill"}*/}
-      {/*          onPress={() => field.onChange("bill")}*/}
-      {/*        >*/}
-      {/*          Bill*/}
-      {/*        </Button>*/}
-      {/*      </View>*/}
-      {/*      <View style={{ flex: 1 }}>*/}
-      {/*        <Button*/}
-      {/*          selected={field.value == "list"}*/}
-      {/*          onPress={() => field.onChange("list")}*/}
-      {/*        >*/}
-      {/*          List*/}
-      {/*        </Button>*/}
-      {/*      </View>*/}
-      {/*    </View>*/}
-      {/*  )}*/}
-      {/*/>*/}
-
       <Controller
         control={control}
         name={"title"}

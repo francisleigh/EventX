@@ -1,4 +1,4 @@
-import { format, differenceInHours } from "date-fns";
+import { format, differenceInHours, isAfter } from "date-fns";
 
 export const formatCurrency = (amount: number) => {
   const Pound = new Intl.NumberFormat("en-GB", {
@@ -16,4 +16,8 @@ export const formatToDate = (date: Date) => {
 
 export const expiresSoon = (date: Date) => {
   return differenceInHours(new Date(), date) < 12;
+};
+
+export const hasExpired = (date: Date) => {
+  return isAfter(new Date(), date);
 };
