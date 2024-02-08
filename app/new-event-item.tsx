@@ -4,7 +4,7 @@ import { Text } from "~/components/core/Text";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { EventItemSchemaType } from "~/types.schema";
-import { getEvent, getEventItem } from "~/db";
+import { getEventItem } from "~/db";
 import { Loading } from "~/components/app/Loading";
 
 export default function NewEventItemPage() {
