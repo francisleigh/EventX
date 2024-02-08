@@ -4,17 +4,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useState } from "react";
 import { TextArea, TextInput } from "~/components/core/FormElements";
-import { createEventItem } from "~/db";
+import {
+  createEventItem,
+  updateExistingEvent,
+  updateExistingEventItem,
+} from "~/db";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { gap } from "~/constants/spacing";
 import { Text } from "~/components/core/Text";
 import { addDays } from "date-fns";
+import { removeUndefinedFields } from "~/util";
 
-export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
+type Props = {
+  eventId: string;
+  eventItemId?: string;
+
+  defaultValues?: EventItemSchemaType;
+};
+export const NewEventItemForm = ({
+  eventId,
+  eventItemId,
+  defaultValues,
+}: Props) => {
   const { control, handleSubmit } = useForm<EventItemSchemaType>({
     defaultValues: {
+      ...(defaultValues ?? {}),
       expiry: addDays(new Date(), 7),
     },
     resolver: zodResolver(EventItemSchema),
@@ -24,6 +40,9 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submissionError, setSubmissionError] = useState<string | undefined>();
 
+  const isEditMode =
+    !!eventItemId && !!defaultValues && !!Object.keys(defaultValues).length;
+
   const submit = useCallback(
     async (formValues: EventItemSchemaType) => {
       console.log("eventId", eventId);
@@ -32,15 +51,24 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
       setSubmissionError(undefined);
       setSubmitting(true);
       try {
-        const { type, id: newEventItemId } = await createEventItem(
-          eventId,
-          formValues,
-        );
-        console.log("New event item", type, newEventItemId);
-        router.replace({
-          pathname: `/${type}`,
-          params: { id: newEventItemId, eventId },
-        });
+        if (isEditMode) {
+          await updateExistingEventItem(
+            eventId,
+            eventItemId,
+            removeUndefinedFields<typeof formValues>(formValues),
+          );
+          router.back();
+        } else {
+          const { type, id: newEventItemId } = await createEventItem(
+            eventId,
+            formValues,
+          );
+          console.log("New event item", type, newEventItemId);
+          router.replace({
+            pathname: `/${type}`,
+            params: { id: newEventItemId, eventId },
+          });
+        }
       } catch (e) {
         console.log("NewEventItemForm error", e);
         setSubmissionError("Error trying to create event item");
@@ -48,7 +76,7 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
         setSubmitting(false);
       }
     },
-    [setSubmitting, setSubmissionError],
+    [setSubmitting, setSubmissionError, isEditMode, eventItemId, eventId],
   );
 
   return (
@@ -63,7 +91,7 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
             <View style={{ flex: 1 }}>
               <Button
                 selected={field.value == "poll"}
-                onPress={() => field.onChange("poll")}
+                onPress={isEditMode ? () => {} : () => field.onChange("poll")}
               >
                 Poll
               </Button>
@@ -71,7 +99,7 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
             <View style={{ flex: 1 }}>
               <Button
                 selected={field.value == "bill"}
-                onPress={() => field.onChange("bill")}
+                onPress={isEditMode ? () => {} : () => field.onChange("bill")}
               >
                 Bill
               </Button>
@@ -79,7 +107,7 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
             <View style={{ flex: 1 }}>
               <Button
                 selected={field.value == "list"}
-                onPress={() => field.onChange("list")}
+                onPress={isEditMode ? () => {} : () => field.onChange("list")}
               >
                 List
               </Button>
@@ -130,7 +158,7 @@ export const NewEventItemForm = ({ eventId }: { eventId: string }) => {
       {!!submissionError && <ErrorBox error={submissionError} />}
 
       <Button busy={submitting} onPress={handleSubmit(submit)}>
-        Create
+        {isEditMode ? "Save" : "Create"}
       </Button>
     </>
   );

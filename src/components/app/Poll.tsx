@@ -22,6 +22,8 @@ import { usePollData, usePollMutations } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
 import { ClientPollDocument } from "~/types.client";
 import { Button } from "~/components/core/Button";
+import { useEventData } from "~/hooks/useEventData";
+import { temp_userid } from "~/tempuser";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -90,6 +92,7 @@ export const Poll = ({
     eventId,
     pollId,
   });
+  const { data: eventData } = useEventData({ eventId });
 
   const handleVoteForOption = useCallback(
     async (optionId: string) => {
@@ -171,8 +174,7 @@ export const Poll = ({
 
   if (!data) return <Text.H1>No poll data</Text.H1>;
 
-  console.log("poll dat", data);
-
+  const canEdit = eventData?.owner === temp_userid && view === "full";
   const pollHasExpired = !!data.expiry && hasExpired(data.expiry.toDate());
   const willExpireSoon =
     !pollHasExpired && !!data.expiry && expiresSoon(data.expiry.toDate());
@@ -201,6 +203,27 @@ export const Poll = ({
           <Text.H2>Description</Text.H2>
           <Text.Span>{data.description}</Text.Span>
         </Card>
+      )}
+      {canEdit && (
+        <Link
+          href={{
+            pathname: "/new-event-item",
+            params: { eventId, eventItemId: pollId },
+          }}
+          asChild
+        >
+          <Button
+            icon={
+              <MaterialCommunityIcons
+                name="pencil"
+                size={24}
+                color={colors.primary}
+              />
+            }
+          >
+            Edit
+          </Button>
+        </Link>
       )}
 
       {optionsBasedOnView?.map((option) => {

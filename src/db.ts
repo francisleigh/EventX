@@ -16,8 +16,10 @@ import {
 } from "@firebase/firestore";
 import { ClientEventDocument, WithID } from "~/types.client";
 import {
+  BillPaymentDocument,
   BillRootDocument,
   EventDocument,
+  EventItemBase,
   ListRootDocument,
   PollOptionDocument,
   PollRootDocument,
@@ -98,6 +100,19 @@ export const createEventItem = async (
   return { id: docRef.id, type: doc?.data()?.type };
 };
 
+export const updateExistingEventItem = async (
+  eventId: ClientEventDocument["id"],
+  eventItemId: string,
+  data: Partial<EventItemSchemaType>,
+): Promise<void> => {
+  console.log("update event item", eventItemId);
+  console.log("update event item", data);
+  const events = collection(firestore, "events", eventId, "items");
+  const ref = doc(events, eventItemId);
+
+  await updateDoc(ref, data);
+};
+
 export const getEventItem = async (eventId: string, eventItemId: string) => {
   const docRef = doc(
     collection(firestore, "events", eventId, "items"),
@@ -105,7 +120,7 @@ export const getEventItem = async (eventId: string, eventItemId: string) => {
   );
   const getDocReturn = await getDoc(docRef);
 
-  return { ...getDocReturn.data(), id: getDocReturn.id };
+  return { ...(getDocReturn.data() as EventItemBase), id: getDocReturn.id };
 };
 
 export const getPollOptions = async (eventId: string, pollId: string) => {
@@ -209,4 +224,26 @@ export const voteForPollOption = async (
   }
 
   return voterDocRef.id;
+};
+
+export const getBillPayments = async (eventId: string, billId: string) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    billId,
+    "payments",
+  );
+  const docs = await getDocs(ref);
+
+  if (docs.empty) return [];
+
+  return docs.docs.map((d) => {
+    const data = d.data() as BillPaymentDocument;
+    return {
+      ...data,
+      id: d.id,
+    };
+  });
 };

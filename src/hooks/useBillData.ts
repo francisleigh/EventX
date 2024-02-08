@@ -1,6 +1,7 @@
 import { ClientBillDocument } from "~/types.client";
 import { useEffect, useState } from "react";
-import { getBill, getBillPayments } from "~/tempdb";
+import { getBillPayments, getEventItem } from "~/db";
+import { BillRootDocument, PollRootDocument } from "~/types.firestore";
 
 type RTN = {
   fetching: boolean;
@@ -19,7 +20,10 @@ export const useBillData = ({
   const getData = async () => {
     setFetching(true);
     try {
-      const bill = await getBill(eventId, billId);
+      const bill = (await getEventItem(
+        eventId,
+        billId,
+      )) as unknown as BillRootDocument;
 
       const nextData: RTN["data"] = {
         ...bill,
@@ -28,11 +32,8 @@ export const useBillData = ({
         payments: [],
       };
 
-      const billPayments = await getBillPayments(billId);
-      if (billPayments)
-        nextData.payments = Object.entries(billPayments).map(
-          ([paymentId, payment]) => ({ id: paymentId, ...payment }),
-        );
+      const billPayments = await getBillPayments(eventId, billId);
+      if (billPayments) nextData.payments = billPayments;
 
       setData(nextData);
     } catch (e) {

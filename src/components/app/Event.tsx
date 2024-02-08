@@ -95,21 +95,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
             </Link>
           )}
 
-          {noItems ? (
-            <Link
-              href={{
-                pathname: "/new-event-item",
-                params: {
-                  eventId,
-                },
-              }}
-              asChild
-            >
-              <Button icon={<Text.Button>+</Text.Button>}>New item</Button>
-            </Link>
-          ) : (
-            <Text.H1>Items</Text.H1>
-          )}
+          {!noItems && <Text.H1>Items</Text.H1>}
 
           {data.polls.map((poll) => (
             <Poll
@@ -152,6 +138,18 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
               }}
             />
           ))}
+
+          <Link
+            href={{
+              pathname: "/new-event-item",
+              params: {
+                eventId,
+              },
+            }}
+            asChild
+          >
+            <Button icon={<Text.Button>+</Text.Button>}>New item</Button>
+          </Link>
         </>
       )}
 

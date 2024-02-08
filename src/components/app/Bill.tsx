@@ -6,17 +6,22 @@ import { Div } from "@expo/html-elements";
 import { gap, padding } from "~/constants/spacing";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { expiresSoon, formatCurrency, formatToDate } from "~/util";
 import { View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
 import { Loading } from "~/components/app/Loading";
+import { Button } from "~/components/core/Button";
+import { useEventData } from "~/hooks/useEventData";
+import { temp_userid } from "~/tempuser";
+import { BillPaymentDocument } from "~/types.firestore";
 
 type BillProps = {
   eventId: string;
   billId: string;
 
-  onItemPress?: () => any;
+  onRefetchData?: () => any;
+
   view?: "full";
   linkProps?: LinkProps<any>;
 };
@@ -27,10 +32,16 @@ export const Bill = ({
   eventId,
   billId,
   view,
-  onItemPress,
+  onRefetchData,
   linkProps,
 }: BillProps) => {
   const { fetching, data } = useBillData({ eventId, billId });
+  const { data: eventData } = useEventData({ eventId });
+
+  const handlePaymentItemPress: (paymentData: BillPaymentDocument) => any =
+    useCallback((paymentData) => {
+      console.log("paymentData", paymentData);
+    }, []);
 
   const TitleBasedOnView = useMemo(
     () => (view === "full" ? Text.H1 : Text.H2),
@@ -65,6 +76,9 @@ export const Bill = ({
 
   if (!data) return <Text.H1>No bill data</Text.H1>;
 
+  const canEdit = eventData?.owner === temp_userid && view === "full";
+  console.log("Bill data", data);
+
   return (
     <>
       <Card
@@ -93,8 +107,42 @@ export const Bill = ({
                 <Text.Span>{data.description}</Text.Span>
               </Card>
             )}
+            {canEdit && (
+              <Link
+                href={{
+                  pathname: "/new-event-item",
+                  params: { eventId, eventItemId: billId },
+                }}
+                asChild
+              >
+                <Button
+                  icon={
+                    <MaterialCommunityIcons
+                      name="pencil"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  }
+                >
+                  Edit
+                </Button>
+              </Link>
+            )}
 
             <Card shadow>
+              <View
+                style={{
+                  position: "absolute",
+                  top: padding["screen-y"],
+                  right: padding["screen-x"],
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="pencil"
+                  size={24}
+                  color={colors.primary}
+                />
+              </View>
               <View>
                 <Text.H2>Owed</Text.H2>
                 <Text.Body>{totalFormatted}</Text.Body>
@@ -126,8 +174,8 @@ export const Bill = ({
                   title={`Paid ${formatCurrency(payment.quantity!)}`}
                   quantitySymbol={"£"}
                   onItemPress={
-                    view === "full" && onItemPress
-                      ? () => onItemPress()
+                    view === "full" && handlePaymentItemPress
+                      ? () => handlePaymentItemPress(payment)
                       : undefined
                   }
                 />
