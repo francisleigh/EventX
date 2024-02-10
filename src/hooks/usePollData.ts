@@ -10,6 +10,7 @@ import { PollRootDocument } from "~/types.firestore";
 import { temp_userid } from "~/tempuser";
 import { expiresSoon, hasExpired } from "~/util";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
+import { useEventData } from "~/hooks/useEventData";
 
 type UsePollDataRTN = UseEventItemDataHookRTN<ClientPollDocument> & {
   getVoteCountForOption: (optionId: string) => number;
@@ -21,6 +22,14 @@ export const usePollData = ({
   eventId: string;
   pollId: string;
 }) => {
+  const {
+    data: parentEventData,
+    expired: parentExpired,
+    canEdit,
+  } = useEventData({
+    eventId,
+  });
+
   const [fetching, setFetching] = useState<UsePollDataRTN["fetching"]>(true);
   const [data, setData] = useState<UsePollDataRTN["data"]>();
 
@@ -91,6 +100,11 @@ export const usePollData = ({
     expiresSoon: willExpireSoon,
 
     getVoteCountForOption,
+
+    parentEventData,
+    parentExpired,
+
+    canEdit,
   };
 };
 

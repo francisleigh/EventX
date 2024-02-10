@@ -4,6 +4,7 @@ import { getBillPayments, getEventItem } from "~/db";
 import { BillRootDocument, PollRootDocument } from "~/types.firestore";
 import { expiresSoon, hasExpired } from "~/util";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
+import { useEventData } from "~/hooks/useEventData";
 
 type RTN = UseEventItemDataHookRTN<ClientBillDocument> & {};
 export const useBillData = ({
@@ -13,6 +14,14 @@ export const useBillData = ({
   eventId: string;
   billId: string;
 }) => {
+  const {
+    data: parentEventData,
+    expired: parentExpired,
+    canEdit,
+  } = useEventData({
+    eventId,
+  });
+
   const [fetching, setFetching] = useState<RTN["fetching"]>(true);
   const [data, setData] = useState<RTN["data"]>();
 
@@ -63,5 +72,10 @@ export const useBillData = ({
 
     expired,
     expiresSoon: willExpireSoon,
+
+    parentEventData,
+    parentExpired,
+
+    canEdit,
   };
 };

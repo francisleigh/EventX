@@ -31,7 +31,7 @@ export const List = ({
   onItemPress,
   linkProps,
 }: ListProps) => {
-  const { fetching, data, expiresSoon, expired } = useListData({
+  const { fetching, data, expiresSoon, expired, canEdit } = useListData({
     eventId,
     listId,
   });

@@ -11,8 +11,6 @@ import { View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
 import { Loading } from "~/components/app/Loading";
 import { Button } from "~/components/core/Button";
-import { useEventData } from "~/hooks/useEventData";
-import { temp_userid } from "~/tempuser";
 import { BillPaymentDocument } from "~/types.firestore";
 import {
   FeatureHeading,
@@ -37,11 +35,10 @@ export const Bill = ({
   onRefetchData,
   linkProps,
 }: BillProps) => {
-  const { fetching, data, expired, expiresSoon } = useBillData({
+  const { fetching, data, expired, expiresSoon, canEdit } = useBillData({
     eventId,
     billId,
   });
-  const { data: eventData } = useEventData({ eventId });
 
   const handlePaymentItemPress: (paymentData: BillPaymentDocument) => any =
     useCallback((paymentData) => {
@@ -75,7 +72,6 @@ export const Bill = ({
 
   if (!data) return <Text.H1>No bill data</Text.H1>;
 
-  const canEdit = eventData?.owner === temp_userid && view === "full";
   console.log("Bill data", data);
 
   return (

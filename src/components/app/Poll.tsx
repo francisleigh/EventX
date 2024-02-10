@@ -86,16 +86,21 @@ export const Poll = ({
   linkProps,
   onRefetchData,
 }: PollProps) => {
-  const { fetching, data, getVoteCountForOption, expired, expiresSoon } =
-    usePollData({
-      eventId,
-      pollId,
-    });
+  const {
+    fetching,
+    data,
+    getVoteCountForOption,
+    expired,
+    expiresSoon,
+    canEdit,
+  } = usePollData({
+    eventId,
+    pollId,
+  });
   const { mutating, optionBeingMutated, voteForOption } = usePollMutations({
     eventId,
     pollId,
   });
-  const { data: eventData } = useEventData({ eventId });
 
   const handleVoteForOption = useCallback(
     async (optionId: string) => {
@@ -172,8 +177,6 @@ export const Poll = ({
 
   if (!data) return <Text.H1>No poll data</Text.H1>;
 
-  const canEdit = eventData?.owner === temp_userid && view === "full";
-
   return (
     <Card
       variant={expiresSoon ? "error" : undefined}
@@ -199,7 +202,7 @@ export const Poll = ({
           <Text.Span>{data.description}</Text.Span>
         </Card>
       )}
-      {canEdit && (
+      {canEdit && view === "full" && (
         <Link
           href={{
             pathname: "/new-event-item",

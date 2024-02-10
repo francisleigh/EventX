@@ -1,11 +1,14 @@
 import { ClientEventDocument } from "~/types.client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getEvent, getEventItems } from "~/db";
+import { UseEventItemDataHookRTN } from "~/types.hooks";
+import { expiresSoon, hasExpired } from "~/util";
+import { temp_userid } from "~/tempuser";
 
-type RTN = {
-  fetching: boolean;
-  data: ClientEventDocument;
-};
+type RTN = Omit<
+  UseEventItemDataHookRTN<ClientEventDocument>,
+  "parentEventData" | "parentExpired"
+> & {};
 
 export const useEventData = ({ eventId }: { eventId: string }) => {
   const [fetching, setFetching] = useState<RTN["fetching"]>(true);
@@ -55,8 +58,26 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
     void getData();
   }, [eventId]);
 
+  const expired = useMemo(() => {
+    if (!data?.end) return false;
+
+    return hasExpired(data.end.toDate());
+  }, [data]);
+  const willExpireSoon = useMemo(() => {
+    if (!data?.end || expired) return false;
+
+    return expiresSoon(data.end.toDate());
+  }, [data, expired]);
+
+  const canEdit = useMemo(() => data?.owner === temp_userid, [data]);
+
   return {
     fetching,
     data,
+
+    expired,
+    expiresSoon: willExpireSoon,
+
+    canEdit,
   };
 };

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getList, getListItems } from "~/tempdb";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
 import { expiresSoon, hasExpired } from "~/util";
+import { useEventData } from "~/hooks/useEventData";
 
 type RTN = UseEventItemDataHookRTN<ClientListDocument> & {};
 export const useListData = ({
@@ -12,6 +13,14 @@ export const useListData = ({
   eventId: string;
   listId: string;
 }) => {
+  const {
+    data: parentEventData,
+    expired: parentExpired,
+    canEdit,
+  } = useEventData({
+    eventId,
+  });
+
   const [fetching, setFetching] = useState<RTN["fetching"]>(true);
   const [data, setData] = useState<RTN["data"]>();
 
@@ -62,5 +71,10 @@ export const useListData = ({
 
     expired,
     expiresSoon: willExpireSoon,
+
+    parentEventData,
+    parentExpired,
+
+    canEdit,
   };
 };
