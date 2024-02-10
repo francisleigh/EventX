@@ -1,9 +1,14 @@
-import { Div } from "@expo/html-elements";
 import { sHeight } from "~/constants/layout";
 import { padding, gap } from "~/constants/spacing";
 import { colors } from "~/constants/colors";
 import { borderWidth, borderRadius } from "~/constants/borders";
-import { ScrollView, StyleProp, ViewProps, ViewStyle } from "react-native";
+import {
+  ScrollView,
+  StyleProp,
+  View,
+  ViewProps,
+  ViewStyle,
+} from "react-native";
 import {
   SafeAreaView,
   SafeAreaViewProps,
@@ -36,7 +41,7 @@ export const PageContainer = ({ children, type = "stack" }: ContainerProps) => {
   );
 };
 PageContainer.InnerContent = ({ children }: ContainerProps) => {
-  return <Div style={{ gap: gap.sm }}>{children}</Div>;
+  return <View style={{ gap: gap.sm }}>{children}</View>;
 };
 
 const variantToColorMap = {
@@ -54,7 +59,7 @@ export const Card = ({
   style?: StyleProp<ViewStyle>;
 }) => {
   return (
-    <Div
+    <View
       style={[
         {
           backgroundColor: colors.secondary,
@@ -81,6 +86,6 @@ export const Card = ({
       ]}
     >
       {children}
-    </Div>
+    </View>
   );
 };

@@ -1,6 +1,5 @@
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
-import { Div } from "@expo/html-elements";
 import { gap, padding } from "~/constants/spacing";
 import { Dot } from "~/components/core/Dot";
 import {
@@ -24,6 +23,10 @@ import { ClientPollDocument } from "~/types.client";
 import { Button } from "~/components/core/Button";
 import { useEventData } from "~/hooks/useEventData";
 import { temp_userid } from "~/tempuser";
+import {
+  FeatureHeading,
+  FeatureHeadingProps,
+} from "~/components/core/FeatureHeading";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -74,9 +77,8 @@ type PollProps = {
 
   onRefetchData?: () => any;
 
-  view?: "full";
   linkProps?: LinkProps<any>;
-};
+} & Pick<FeatureHeadingProps, "view">;
 export const Poll = ({
   view,
   eventId,
@@ -101,11 +103,6 @@ export const Poll = ({
       if (onRefetchData) onRefetchData();
     },
     [onRefetchData],
-  );
-
-  const TitleBasedOnView = useMemo(
-    () => (view === "full" ? Text.H1 : Text.H2),
-    [view],
   );
 
   const optionsBasedOnView =
@@ -185,7 +182,7 @@ export const Poll = ({
       shadow={view !== "full" && willExpireSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <TitleBasedOnView>
+      <FeatureHeading view={"full"}>
         {data.title}
         {willExpireSoon && (
           <>
@@ -197,7 +194,7 @@ export const Poll = ({
             />
           </>
         )}
-      </TitleBasedOnView>
+      </FeatureHeading>
       {view === "full" && !!data.description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>
@@ -262,7 +259,7 @@ export const Poll = ({
                 </TouchableOpacity>
               )}
             </View>
-            <Div
+            <View
               style={{
                 flexDirection: "row",
                 gap: gap.sm,
@@ -282,7 +279,7 @@ export const Poll = ({
               ) : (
                 <Dot style={[dotStyle, { borderWidth: 1 }]} />
               )}
-            </Div>
+            </View>
           </TouchableOpacity>
         );
       })}
@@ -337,7 +334,7 @@ export const Poll = ({
       {!!linkProps && view !== "full" && (
         // @ts-ignore
         <Link {...linkProps}>
-          <Div
+          <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -348,7 +345,7 @@ export const Poll = ({
           >
             <Text.Span>See more</Text.Span>
             <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </Div>
+          </View>
         </Link>
       )}
     </Card>

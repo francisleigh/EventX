@@ -8,10 +8,12 @@ import { Loading } from "~/components/app/Loading";
 import { Link } from "expo-router";
 import { getEvents } from "~/db";
 import { temp_userid } from "~/tempuser";
+import { FeatureHeading } from "~/components/core/FeatureHeading";
+import { ClientEventDocument } from "~/types.client";
 
 export default function Page() {
   const [fetchingEvents, setFetchingEvents] = useState<boolean>(true);
-  const [events, setEvents] = useState<Awaited<typeof getEvents>>();
+  const [events, setEvents] = useState<ClientEventDocument[]>([]);
 
   useEffect(() => {
     getEvents(temp_userid)
@@ -22,7 +24,7 @@ export default function Page() {
   return (
     <>
       <PageContainer>
-        <Text.H1>Hi Ellen!</Text.H1>
+        <FeatureHeading view={"full"}>Hi Ellen!</FeatureHeading>
 
         <PageContainer.InnerContent>
           {fetchingEvents ? (

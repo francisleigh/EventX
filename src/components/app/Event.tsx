@@ -4,9 +4,7 @@ import { Card } from "~/components/core/Layout";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { Text } from "~/components/core/Text";
-import { Div } from "@expo/html-elements";
 import { padding } from "~/constants/spacing";
-import { useMemo } from "react";
 import { useEventData } from "~/hooks/useEventData";
 import { Poll } from "~/components/app/Poll";
 import { Loading } from "~/components/app/Loading";
@@ -14,23 +12,20 @@ import { Bill } from "~/components/app/Bill";
 import { List } from "~/components/app/List";
 import { Button } from "~/components/core/Button";
 import { temp_userid } from "~/tempuser";
-import { TouchableOpacity } from "react-native";
-import { borderRadius } from "~/constants/borders";
+import { View } from "react-native";
+import {
+  FeatureHeading,
+  FeatureHeadingProps,
+} from "~/components/core/FeatureHeading";
 
 type EventProps = {
   eventId: string;
-  view?: "full";
   linkProps?: LinkProps<any>;
-};
+} & Pick<FeatureHeadingProps, "view">;
 
 export const Event = ({ eventId, view, linkProps }: EventProps) => {
   const { fetching, data } = useEventData({ eventId });
   const router = useRouter();
-
-  const TitleBasedOnView = useMemo(
-    () => (view === "full" ? Text.H1 : Text.H2),
-    [view],
-  );
 
   if (fetching) return <Loading />;
 
@@ -46,7 +41,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
       shadow={view !== "full" && willExpireSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <TitleBasedOnView>
+      <FeatureHeading view={view}>
         {data.title}{" "}
         {willExpireSoon && (
           <>
@@ -58,7 +53,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
             />
           </>
         )}
-      </TitleBasedOnView>
+      </FeatureHeading>
 
       {view === "full" && (
         <>
@@ -156,7 +151,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
       {!!linkProps && view !== "full" && (
         // @ts-ignore
         <Link {...linkProps}>
-          <Div
+          <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -167,7 +162,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           >
             <Text.Span>See more</Text.Span>
             <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </Div>
+          </View>
         </Link>
       )}
     </Card>

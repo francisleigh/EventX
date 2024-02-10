@@ -58,7 +58,7 @@ export const getEvents = async (userId: string) => {
   return querySnapshot.docs.map((doc) => ({
     ...(doc.data() as EventDocument),
     id: doc.id,
-  }));
+  })) as ClientEventDocument[];
 };
 
 export const getEvent = async (eventId: ClientEventDocument["id"]) => {

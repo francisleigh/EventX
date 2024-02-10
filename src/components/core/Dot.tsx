@@ -1,7 +1,6 @@
-import { Div } from "@expo/html-elements";
 import { colors } from "~/constants/colors";
 import { padding } from "~/constants/spacing";
-import { StyleSheet, ViewProps } from "react-native";
+import { StyleSheet, View, ViewProps } from "react-native";
 import { borderWidth } from "~/constants/borders";
 
 export const Dot = ({
@@ -14,7 +13,7 @@ export const Dot = ({
   pending?: boolean;
 } & Pick<ViewProps, "children" | "style">) => {
   return (
-    <Div
+    <View
       style={[
         {
           alignItems: "center",
@@ -31,7 +30,7 @@ export const Dot = ({
       ]}
     >
       {children}
-    </Div>
+    </View>
   );
 };
 

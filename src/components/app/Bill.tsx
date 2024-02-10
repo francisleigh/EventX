@@ -2,7 +2,6 @@ import { ListItem } from "~/components/app/ListItem";
 import { Link, LinkProps } from "expo-router";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
-import { Div } from "@expo/html-elements";
 import { gap, padding } from "~/constants/spacing";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
@@ -15,6 +14,10 @@ import { Button } from "~/components/core/Button";
 import { useEventData } from "~/hooks/useEventData";
 import { temp_userid } from "~/tempuser";
 import { BillPaymentDocument } from "~/types.firestore";
+import {
+  FeatureHeading,
+  FeatureHeadingProps,
+} from "~/components/core/FeatureHeading";
 
 type BillProps = {
   eventId: string;
@@ -22,9 +25,8 @@ type BillProps = {
 
   onRefetchData?: () => any;
 
-  view?: "full";
   linkProps?: LinkProps<any>;
-};
+} & Pick<FeatureHeadingProps, "view">;
 
 const currency = { symbol: "£", code: "GBP" };
 
@@ -43,10 +45,6 @@ export const Bill = ({
       console.log("paymentData", paymentData);
     }, []);
 
-  const TitleBasedOnView = useMemo(
-    () => (view === "full" ? Text.H1 : Text.H2),
-    [view],
-  );
   const paymentsBasedOnView = useMemo(
     () =>
       view === "full" ? data?.payments : data?.payments?.slice(0, 3) ?? [],
@@ -86,7 +84,7 @@ export const Bill = ({
         shadow={view !== "full" && willExpireSoon}
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
-        <TitleBasedOnView>
+        <FeatureHeading view={view}>
           {data?.title}
           {willExpireSoon && (
             <>
@@ -98,7 +96,7 @@ export const Bill = ({
               />
             </>
           )}
-        </TitleBasedOnView>
+        </FeatureHeading>
         {view === "full" && (
           <>
             {data.description && (
@@ -162,7 +160,7 @@ export const Bill = ({
           </>
         )}
         {view === "full" ? (
-          <Div
+          <View
             style={{
               gap: gap.sm,
             }}
@@ -180,9 +178,9 @@ export const Bill = ({
                   }
                 />
               ))}
-          </Div>
+          </View>
         ) : (
-          <Div
+          <View
             style={{
               gap: gap.sm,
               flexDirection: "row",
@@ -190,19 +188,19 @@ export const Bill = ({
               alignItems: "center",
             }}
           >
-            <Div>
+            <View>
               <Text.Body>{totalFormatted} owed</Text.Body>
               <Text.Span>
                 {totalPaid ? `${paidFormatted} paid` : "Nothing paid"}
               </Text.Span>
-            </Div>
-          </Div>
+            </View>
+          </View>
         )}
 
         {!!linkProps && view !== "full" && (
           // @ts-ignore
           <Link {...linkProps}>
-            <Div
+            <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -213,7 +211,7 @@ export const Bill = ({
             >
               <Text.Span>See more</Text.Span>
               <AntDesign name="arrowright" size={24} color={colors.primary} />
-            </Div>
+            </View>
           </Link>
         )}
       </Card>

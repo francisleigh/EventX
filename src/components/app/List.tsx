@@ -2,7 +2,6 @@ import { ListItem } from "~/components/app/ListItem";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { gap, padding } from "~/constants/spacing";
-import { Div } from "@expo/html-elements";
 import { Link, LinkProps } from "expo-router";
 import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
@@ -11,15 +10,19 @@ import { View } from "react-native";
 import { expiresSoon, formatToDate } from "~/util";
 import { useListData } from "~/hooks/useListData";
 import { Loading } from "~/components/app/Loading";
+import {
+  FeatureHeading,
+  FeatureHeadingProps,
+} from "~/components/core/FeatureHeading";
 
 type ListProps = {
   eventId: string;
   listId: string;
 
   onItemPress?: () => any;
-  view?: "full";
+
   linkProps?: LinkProps<any>;
-};
+} & Pick<FeatureHeadingProps, "view">;
 
 export const List = ({
   eventId,
@@ -30,10 +33,6 @@ export const List = ({
 }: ListProps) => {
   const { fetching, data } = useListData({ eventId, listId });
 
-  const TitleBasedOnView = useMemo(
-    () => (view === "full" ? Text.H1 : Text.H2),
-    [view],
-  );
   const itemsBasedOnView = useMemo(
     () => (view === "full" ? data?.items : data?.items?.slice(0, 3)) ?? [],
     [data?.items, view],
@@ -83,7 +82,7 @@ export const List = ({
       shadow={view !== "full" && willExpireSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <TitleBasedOnView>
+      <FeatureHeading view={view}>
         {data.title}{" "}
         {willExpireSoon && (
           <>
@@ -95,7 +94,7 @@ export const List = ({
             />
           </>
         )}
-      </TitleBasedOnView>
+      </FeatureHeading>
       {view === "full" && !!data.description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>
@@ -104,7 +103,7 @@ export const List = ({
       )}
 
       {view === "full" ? (
-        <Div
+        <View
           style={{
             gap: gap.sm,
           }}
@@ -116,9 +115,9 @@ export const List = ({
               onItemPress={view === "full" ? onItemPress : undefined}
             />
           ))}
-        </Div>
+        </View>
       ) : (
-        <Div
+        <View
           style={{
             gap: gap.sm,
             flexDirection: "row",
@@ -126,7 +125,7 @@ export const List = ({
             alignItems: "center",
           }}
         >
-          <Div>
+          <View>
             <Text.Body>{data.items.length} items</Text.Body>
             {!!totalAssignees ? (
               <Text.Span>
@@ -135,10 +134,10 @@ export const List = ({
             ) : (
               <Text.Span>No items Assigned</Text.Span>
             )}
-          </Div>
+          </View>
 
           {statusIcon}
-        </Div>
+        </View>
       )}
 
       {view === "full" && !!data.expiry && (
@@ -151,7 +150,7 @@ export const List = ({
       {!!linkProps && view !== "full" && (
         // @ts-ignore
         <Link {...linkProps}>
-          <Div
+          <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -162,7 +161,7 @@ export const List = ({
           >
             <Text.Span>See more</Text.Span>
             <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </Div>
+          </View>
         </Link>
       )}
     </Card>
