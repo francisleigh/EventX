@@ -15,7 +15,7 @@ import * as Linking from "expo-linking";
 import { colors } from "~/constants/colors";
 import { Link, LinkProps } from "expo-router";
 import { useCallback, useMemo } from "react";
-import { expiresSoon, formatToDate, hasExpired } from "~/util";
+import { formatToDate } from "~/util";
 import { Avatar } from "~/components/app/Avatar";
 import { usePollData, usePollMutations } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
@@ -86,10 +86,11 @@ export const Poll = ({
   linkProps,
   onRefetchData,
 }: PollProps) => {
-  const { fetching, data, getVoteCountForOption } = usePollData({
-    eventId,
-    pollId,
-  });
+  const { fetching, data, getVoteCountForOption, expired, expiresSoon } =
+    usePollData({
+      eventId,
+      pollId,
+    });
   const { mutating, optionBeingMutated, voteForOption } = usePollMutations({
     eventId,
     pollId,
@@ -172,19 +173,16 @@ export const Poll = ({
   if (!data) return <Text.H1>No poll data</Text.H1>;
 
   const canEdit = eventData?.owner === temp_userid && view === "full";
-  const pollHasExpired = !!data.expiry && hasExpired(data.expiry.toDate());
-  const willExpireSoon =
-    !pollHasExpired && !!data.expiry && expiresSoon(data.expiry.toDate());
 
   return (
     <Card
-      variant={willExpireSoon ? "error" : undefined}
-      shadow={view !== "full" && willExpireSoon}
+      variant={expiresSoon ? "error" : undefined}
+      shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
       <FeatureHeading view={"full"}>
         {data.title}
-        {willExpireSoon && (
+        {expiresSoon && (
           <>
             {" "}
             <MaterialCommunityIcons
@@ -232,7 +230,7 @@ export const Poll = ({
             key={option.id}
             onPress={() => view === "full" && handleVoteForOption(option.id)}
             activeOpacity={view === "full" ? undefined : 1}
-            disabled={mutating || pollHasExpired}
+            disabled={mutating || expired}
             style={[
               {
                 flexDirection: "row",
@@ -240,7 +238,7 @@ export const Poll = ({
                 alignItems: "center",
               },
               view !== "full" && { pointerEvents: "none" },
-              (mutating || pollHasExpired) && { opacity: 0.5 },
+              (mutating || expired) && { opacity: 0.5 },
             ]}
           >
             <View
@@ -286,7 +284,7 @@ export const Poll = ({
 
       {view === "full" && (
         <>
-          {pollHasExpired ? null : (
+          {expired ? null : (
             <Link
               href={{
                 pathname: "/new-poll-option",
@@ -325,7 +323,7 @@ export const Poll = ({
               <Text.H2>Due date</Text.H2>
               <Text.Body>
                 {formatToDate(data.expiry.toDate())}
-                {pollHasExpired && " - Ended"}
+                {expired && " - Ended"}
               </Text.Body>
             </Card>
           )}

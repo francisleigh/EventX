@@ -7,7 +7,7 @@ import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { expiresSoon, formatToDate } from "~/util";
+import { formatToDate } from "~/util";
 import { useListData } from "~/hooks/useListData";
 import { Loading } from "~/components/app/Loading";
 import {
@@ -31,7 +31,10 @@ export const List = ({
   onItemPress,
   linkProps,
 }: ListProps) => {
-  const { fetching, data } = useListData({ eventId, listId });
+  const { fetching, data, expiresSoon, expired } = useListData({
+    eventId,
+    listId,
+  });
 
   const itemsBasedOnView = useMemo(
     () => (view === "full" ? data?.items : data?.items?.slice(0, 3)) ?? [],
@@ -70,21 +73,19 @@ export const List = ({
     return <Entypo name="progress-one" size={24} color={colors.primary} />;
   }, [allStatuses]);
 
-  const willExpireSoon = !!data?.expiry && expiresSoon(data.expiry.toDate());
-
   if (fetching) return <Loading />;
 
   if (!data) return <Text.H1>No list data</Text.H1>;
 
   return (
     <Card
-      variant={willExpireSoon ? "error" : undefined}
-      shadow={view !== "full" && willExpireSoon}
+      variant={expiresSoon ? "error" : undefined}
+      shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
       <FeatureHeading view={view}>
         {data.title}{" "}
-        {willExpireSoon && (
+        {expiresSoon && (
           <>
             {" "}
             <MaterialCommunityIcons

@@ -6,7 +6,7 @@ import { gap, padding } from "~/constants/spacing";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useCallback, useMemo } from "react";
-import { expiresSoon, formatCurrency, formatToDate } from "~/util";
+import { formatCurrency, formatToDate } from "~/util";
 import { View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
 import { Loading } from "~/components/app/Loading";
@@ -37,7 +37,10 @@ export const Bill = ({
   onRefetchData,
   linkProps,
 }: BillProps) => {
-  const { fetching, data } = useBillData({ eventId, billId });
+  const { fetching, data, expired, expiresSoon } = useBillData({
+    eventId,
+    billId,
+  });
   const { data: eventData } = useEventData({ eventId });
 
   const handlePaymentItemPress: (paymentData: BillPaymentDocument) => any =
@@ -68,8 +71,6 @@ export const Bill = ({
   );
   const paidFormatted = useMemo(() => formatCurrency(totalPaid), [totalPaid]);
 
-  const willExpireSoon = !!data?.expiry && expiresSoon(data.expiry.toDate());
-
   if (fetching) return <Loading />;
 
   if (!data) return <Text.H1>No bill data</Text.H1>;
@@ -80,13 +81,13 @@ export const Bill = ({
   return (
     <>
       <Card
-        variant={settled ? "success" : willExpireSoon ? "error" : undefined}
-        shadow={view !== "full" && willExpireSoon}
+        variant={settled ? "success" : expiresSoon ? "error" : undefined}
+        shadow={view !== "full" && expiresSoon}
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
         <FeatureHeading view={view}>
           {data?.title}
-          {willExpireSoon && (
+          {expiresSoon && (
             <>
               {" "}
               <MaterialCommunityIcons

@@ -1,5 +1,5 @@
 import { ClientPollDocument } from "~/types.client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getEventItem,
   getPollOptions,
@@ -8,11 +8,10 @@ import {
 } from "~/db";
 import { PollRootDocument } from "~/types.firestore";
 import { temp_userid } from "~/tempuser";
+import { expiresSoon, hasExpired } from "~/util";
+import { UseEventItemDataHookRTN } from "~/types.hooks";
 
-type UsePollDataRTN = {
-  fetching: boolean;
-  data: ClientPollDocument;
-
+type UsePollDataRTN = UseEventItemDataHookRTN<ClientPollDocument> & {
   getVoteCountForOption: (optionId: string) => number;
 };
 export const usePollData = ({
@@ -73,9 +72,23 @@ export const usePollData = ({
       [data],
     );
 
+  const expired = useMemo(() => {
+    if (!data) return false;
+
+    return hasExpired(data.expiry.toDate());
+  }, [data]);
+  const willExpireSoon = useMemo(() => {
+    if (!data || expired) return false;
+
+    return expiresSoon(data.expiry.toDate());
+  }, [data, expired]);
+
   return {
     fetching,
     data,
+
+    expired,
+    expiresSoon: willExpireSoon,
 
     getVoteCountForOption,
   };
