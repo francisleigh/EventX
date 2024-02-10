@@ -31,7 +31,7 @@ export default function NewEventItemPage() {
   }, [eventId, setLoadingExistingEventItemData]);
 
   return (
-    <PageContainer edges={["bottom", "left", "right"]}>
+    <PageContainer type={"modal"}>
       <Text.H1>{eventItemId ? "Edit event item" : "New event item"}</Text.H1>
       {loadingExistingEventItemData ? (
         <Loading />

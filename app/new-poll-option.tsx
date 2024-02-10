@@ -7,7 +7,7 @@ export default function NewPollOptionPage() {
   const params = useLocalSearchParams();
 
   return (
-    <PageContainer edges={["bottom", "left", "right"]}>
+    <PageContainer type={"modal"}>
       <Text.H1>New Poll Option</Text.H1>
       <NewPollOptionForm
         eventId={params.eventId as string}

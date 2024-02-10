@@ -9,9 +9,12 @@ import {
   SafeAreaViewProps,
 } from "react-native-safe-area-context";
 
-type ContainerProps = Pick<ViewProps, "children"> &
-  Pick<SafeAreaViewProps, "edges">;
-export const PageContainer = ({ children, edges }: ContainerProps) => {
+type ContainerProps = Pick<ViewProps, "children"> & {
+  type?: "modal" | "stack";
+};
+export const PageContainer = ({ children, type = "stack" }: ContainerProps) => {
+  let edges: SafeAreaViewProps["edges"] = [];
+  if (type === "modal") edges = ["bottom", "left", "right"];
   return (
     <SafeAreaView style={{ backgroundColor: colors.secondary }} edges={edges}>
       <ScrollView
