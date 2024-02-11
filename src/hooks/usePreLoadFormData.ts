@@ -8,9 +8,10 @@ type RTN<DataShape extends {}> = {
   data: DataShape | undefined;
   preLoadingFormData: boolean;
 };
-export function usePreLoadFormData<DataShape extends {}>({
-  query,
-}: Props<DataShape>): RTN<DataShape> {
+export function usePreLoadFormData<DataShape extends {}>(
+  { query }: Props<DataShape>,
+  deps: any[] = [],
+): RTN<DataShape> {
   const [preLoadingFormData, setPreLoadingFormData] =
     useState<RTN<DataShape>["preLoadingFormData"]>(true);
   const [data, setData] = useState<RTN<DataShape>["data"]>();
@@ -19,7 +20,8 @@ export function usePreLoadFormData<DataShape extends {}>({
     async function main() {
       setPreLoadingFormData(true);
       try {
-        await query();
+        const queryResult = await query();
+        setData(queryResult);
       } catch (e) {
         console.log("usePreLoadFormData query error", e);
       } finally {
@@ -28,7 +30,7 @@ export function usePreLoadFormData<DataShape extends {}>({
     }
 
     void main();
-  }, [query]);
+  }, deps);
 
   return {
     data,

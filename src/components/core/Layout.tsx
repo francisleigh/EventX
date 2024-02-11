@@ -18,7 +18,7 @@ type ContainerProps = Pick<ViewProps, "children"> & {
   type?: "modal" | "stack";
 };
 export const PageContainer = ({ children, type = "stack" }: ContainerProps) => {
-  let edges: SafeAreaViewProps["edges"] = [];
+  let edges: SafeAreaViewProps["edges"] = undefined;
   if (type === "modal") edges = ["bottom", "left", "right"];
   return (
     <SafeAreaView style={{ backgroundColor: colors.secondary }} edges={edges}>

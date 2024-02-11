@@ -1,9 +1,9 @@
 import { ListItem } from "~/components/app/ListItem";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
-import { gap, padding } from "~/constants/spacing";
-import { Link, LinkProps } from "expo-router";
-import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import { gap } from "~/constants/spacing";
+import { LinkProps } from "expo-router";
+import { Entypo } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useMemo } from "react";
 import { View } from "react-native";
@@ -14,6 +14,8 @@ import {
   FeatureHeading,
   FeatureHeadingProps,
 } from "~/components/core/FeatureHeading";
+import { SeeMore } from "~/components/core/SeeMore";
+import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 
 type ListProps = {
   eventId: string;
@@ -31,10 +33,11 @@ export const List = ({
   onItemPress,
   linkProps,
 }: ListProps) => {
-  const { fetching, data, expiresSoon, expired, canEdit } = useListData({
-    eventId,
-    listId,
-  });
+  const { fetching, data, expiresSoon, expired, parentExpired, canEdit } =
+    useListData({
+      eventId,
+      listId,
+    });
 
   const itemsBasedOnView = useMemo(
     () => (view === "full" ? data?.items : data?.items?.slice(0, 3)) ?? [],
@@ -83,18 +86,21 @@ export const List = ({
       shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <FeatureHeading view={view}>
+      <FeatureHeading
+        view={view}
+        parentExpired={parentExpired}
+        expiresSoon={expiresSoon}
+        expired={expired}
+        editLinkHref={
+          canEdit
+            ? {
+                pathname: "/new-event-item",
+                params: { eventId, eventItemId: listId },
+              }
+            : undefined
+        }
+      >
         {data.title}{" "}
-        {expiresSoon && (
-          <>
-            {" "}
-            <MaterialCommunityIcons
-              name="clock-alert"
-              size={24}
-              color={colors.detail}
-            />
-          </>
-        )}
       </FeatureHeading>
       {view === "full" && !!data.description && (
         <Card shadow>
@@ -141,30 +147,11 @@ export const List = ({
         </View>
       )}
 
-      {view === "full" && !!data.expiry && (
-        <Card shadow>
-          <Text.H2>Due date</Text.H2>
-          <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
-        </Card>
+      {view === "full" && (
+        <ExpiryDetails expiry={data?.expiry} expired={expired} />
       )}
 
-      {!!linkProps && view !== "full" && (
-        // @ts-ignore
-        <Link {...linkProps}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              paddingVertical: padding.sm,
-            }}
-          >
-            <Text.Span>See more</Text.Span>
-            <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </View>
-        </Link>
-      )}
+      <SeeMore linkProps={linkProps} view={view} />
     </Card>
   );
 };

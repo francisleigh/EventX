@@ -9,12 +9,18 @@ import { usePreLoadFormData } from "~/hooks/usePreLoadFormData";
 
 export default function NewEventItemPage() {
   const { eventId, eventItemId } = useLocalSearchParams();
-  const { data, preLoadingFormData } = usePreLoadFormData<EventItemSchemaType>({
-    query: async () => {
-      const eventItem = getEventItem(eventId as string, eventItemId as string);
-      return eventItem ?? undefined;
+  const { data, preLoadingFormData } = usePreLoadFormData<EventItemSchemaType>(
+    {
+      query: async () => {
+        const eventItem = getEventItem(
+          eventId as string,
+          eventItemId as string,
+        );
+        return eventItem ?? undefined;
+      },
     },
-  });
+    [eventId, eventItemId],
+  );
 
   return (
     <PageContainer type={"modal"}>

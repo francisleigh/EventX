@@ -1,6 +1,6 @@
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
-import { gap, padding } from "~/constants/spacing";
+import { gap } from "~/constants/spacing";
 import { Dot } from "~/components/core/Dot";
 import {
   StyleProp,
@@ -10,7 +10,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { colors } from "~/constants/colors";
 import { Link, LinkProps } from "expo-router";
@@ -21,12 +20,12 @@ import { usePollData, usePollMutations } from "~/hooks/usePollData";
 import { Loading } from "~/components/app/Loading";
 import { ClientPollDocument } from "~/types.client";
 import { Button } from "~/components/core/Button";
-import { useEventData } from "~/hooks/useEventData";
-import { temp_userid } from "~/tempuser";
 import {
   FeatureHeading,
   FeatureHeadingProps,
 } from "~/components/core/FeatureHeading";
+import { SeeMore } from "~/components/core/SeeMore";
+import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -90,6 +89,7 @@ export const Poll = ({
     fetching,
     data,
     getVoteCountForOption,
+    parentExpired,
     expired,
     expiresSoon,
     canEdit,
@@ -183,45 +183,27 @@ export const Poll = ({
       shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <FeatureHeading view={"full"}>
+      <FeatureHeading
+        view={view}
+        parentExpired={parentExpired}
+        expiresSoon={expiresSoon}
+        expired={expired}
+        editLinkHref={
+          canEdit
+            ? {
+                pathname: "/new-event-item",
+                params: { eventId, eventItemId: pollId },
+              }
+            : undefined
+        }
+      >
         {data.title}
-        {expiresSoon && (
-          <>
-            {" "}
-            <MaterialCommunityIcons
-              name="clock-alert"
-              size={24}
-              color={colors.detail}
-            />
-          </>
-        )}
       </FeatureHeading>
       {view === "full" && !!data.description && (
         <Card shadow>
           <Text.H2>Description</Text.H2>
           <Text.Span>{data.description}</Text.Span>
         </Card>
-      )}
-      {canEdit && view === "full" && (
-        <Link
-          href={{
-            pathname: "/new-event-item",
-            params: { eventId, eventItemId: pollId },
-          }}
-          asChild
-        >
-          <Button
-            icon={
-              <MaterialCommunityIcons
-                name="pencil"
-                size={24}
-                color={colors.primary}
-              />
-            }
-          >
-            Edit
-          </Button>
-        </Link>
       )}
 
       {optionsBasedOnView?.map((option) => {
@@ -321,34 +303,11 @@ export const Poll = ({
             </Card>
           )}
 
-          {!!data?.expiry && (
-            <Card shadow>
-              <Text.H2>Due date</Text.H2>
-              <Text.Body>
-                {formatToDate(data.expiry.toDate())}
-                {expired && " - Ended"}
-              </Text.Body>
-            </Card>
-          )}
+          <ExpiryDetails expiry={data?.expiry} expired={expired} />
         </>
       )}
-      {!!linkProps && view !== "full" && (
-        // @ts-ignore
-        <Link {...linkProps}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              paddingVertical: padding.sm,
-            }}
-          >
-            <Text.Span>See more</Text.Span>
-            <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </View>
-        </Link>
-      )}
+
+      <SeeMore linkProps={linkProps} view={view} />
     </Card>
   );
 };

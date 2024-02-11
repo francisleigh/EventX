@@ -17,6 +17,8 @@ import {
   FeatureHeading,
   FeatureHeadingProps,
 } from "~/components/core/FeatureHeading";
+import { SeeMore } from "~/components/core/SeeMore";
+import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 
 type EventProps = {
   eventId: string;
@@ -24,35 +26,31 @@ type EventProps = {
 } & Pick<FeatureHeadingProps, "view">;
 
 export const Event = ({ eventId, view, linkProps }: EventProps) => {
-  const { fetching, data } = useEventData({ eventId });
+  const { fetching, data, expired, expiresSoon } = useEventData({ eventId });
   const router = useRouter();
 
   if (fetching) return <Loading />;
 
   if (!data) return <Text.H1>No event data</Text.H1>;
 
-  const canEdit = data.owner === temp_userid && view === "full";
-  const willExpireSoon = !!data.start && expiresSoon(data.start.toDate());
   const noItems = [...data.polls, ...data.bills, ...data.lists].length === 0;
 
   return (
     <Card
-      variant={willExpireSoon ? "error" : undefined}
-      shadow={view !== "full" && willExpireSoon}
+      variant={expiresSoon ? "error" : undefined}
+      shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
-      <FeatureHeading view={view}>
-        {data.title}{" "}
-        {willExpireSoon && (
-          <>
-            {" "}
-            <MaterialCommunityIcons
-              name="clock-alert"
-              size={24}
-              color={colors.detail}
-            />
-          </>
-        )}
+      <FeatureHeading
+        view={view}
+        expired={expired}
+        expiresSoon={expiresSoon}
+        editLinkHref={{
+          pathname: "/new-event",
+          params: { eventId },
+        }}
+      >
+        {data.title}
       </FeatureHeading>
 
       {view === "full" && (
@@ -69,25 +67,6 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
               <Text.H2>Event date</Text.H2>
               <Text.Body>{formatToDate(data.start.toDate())}</Text.Body>
             </Card>
-          )}
-
-          {canEdit && (
-            <Link
-              href={{ pathname: "/new-event", params: { eventId } }}
-              asChild
-            >
-              <Button
-                icon={
-                  <MaterialCommunityIcons
-                    name="pencil"
-                    size={24}
-                    color={colors.primary}
-                  />
-                }
-              >
-                Edit
-              </Button>
-            </Link>
           )}
 
           {!noItems && <Text.H1>Items</Text.H1>}
@@ -145,26 +124,12 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           >
             <Button icon={<Text.Button>+</Text.Button>}>New item</Button>
           </Link>
+
+          <ExpiryDetails expiry={data?.end} expired={expired} />
         </>
       )}
 
-      {!!linkProps && view !== "full" && (
-        // @ts-ignore
-        <Link {...linkProps}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              paddingVertical: padding.sm,
-            }}
-          >
-            <Text.Span>See more</Text.Span>
-            <AntDesign name="arrowright" size={24} color={colors.primary} />
-          </View>
-        </Link>
-      )}
+      <SeeMore linkProps={linkProps} view={view} />
     </Card>
   );
 };

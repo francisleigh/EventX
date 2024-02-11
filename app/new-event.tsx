@@ -9,20 +9,25 @@ import { usePreLoadFormData } from "~/hooks/usePreLoadFormData";
 
 export default function NewEventPage() {
   const { eventId } = useLocalSearchParams();
-  const { data, preLoadingFormData } = usePreLoadFormData<EventSchemaType>({
-    query: async () => {
-      const event = await getEvent(eventId as string);
-      if (event) {
-        return {
-          ...event,
-          end: event.end?.toDate(),
-          start: event.start?.toDate(),
-        } as EventSchemaType;
-      }
+  const { data, preLoadingFormData } = usePreLoadFormData<EventSchemaType>(
+    {
+      query: async () => {
+        console.log("query eventId", eventId);
+        const event = await getEvent(eventId as string);
+        console.log("event", event);
+        if (event) {
+          return {
+            ...event,
+            end: event.end?.toDate(),
+            start: event.start?.toDate(),
+          } as EventSchemaType;
+        }
 
-      return undefined;
+        return undefined;
+      },
     },
-  });
+    [eventId],
+  );
 
   return (
     <PageContainer type={"modal"}>

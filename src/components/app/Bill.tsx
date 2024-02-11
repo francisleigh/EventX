@@ -1,21 +1,22 @@
 import { ListItem } from "~/components/app/ListItem";
-import { Link, LinkProps } from "expo-router";
+import { LinkProps } from "expo-router";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { gap, padding } from "~/constants/spacing";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useCallback, useMemo } from "react";
 import { formatCurrency, formatToDate } from "~/util";
 import { View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
 import { Loading } from "~/components/app/Loading";
-import { Button } from "~/components/core/Button";
 import { BillPaymentDocument } from "~/types.firestore";
 import {
   FeatureHeading,
   FeatureHeadingProps,
 } from "~/components/core/FeatureHeading";
+import { SeeMore } from "~/components/core/SeeMore";
+import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 
 type BillProps = {
   eventId: string;
@@ -35,10 +36,11 @@ export const Bill = ({
   onRefetchData,
   linkProps,
 }: BillProps) => {
-  const { fetching, data, expired, expiresSoon, canEdit } = useBillData({
-    eventId,
-    billId,
-  });
+  const { fetching, data, parentExpired, expired, expiresSoon, canEdit } =
+    useBillData({
+      eventId,
+      billId,
+    });
 
   const handlePaymentItemPress: (paymentData: BillPaymentDocument) => any =
     useCallback((paymentData) => {
@@ -81,18 +83,21 @@ export const Bill = ({
         shadow={view !== "full" && expiresSoon}
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
-        <FeatureHeading view={view}>
+        <FeatureHeading
+          view={view}
+          parentExpired={parentExpired}
+          expiresSoon={expiresSoon}
+          expired={expired}
+          editLinkHref={
+            canEdit
+              ? {
+                  pathname: "/new-event-item",
+                  params: { eventId, eventItemId: billId },
+                }
+              : undefined
+          }
+        >
           {data?.title}
-          {expiresSoon && (
-            <>
-              {" "}
-              <MaterialCommunityIcons
-                name="clock-alert"
-                size={24}
-                color={colors.detail}
-              />
-            </>
-          )}
         </FeatureHeading>
         {view === "full" && (
           <>
@@ -101,27 +106,6 @@ export const Bill = ({
                 <Text.H2>Description</Text.H2>
                 <Text.Span>{data.description}</Text.Span>
               </Card>
-            )}
-            {canEdit && (
-              <Link
-                href={{
-                  pathname: "/new-event-item",
-                  params: { eventId, eventItemId: billId },
-                }}
-                asChild
-              >
-                <Button
-                  icon={
-                    <MaterialCommunityIcons
-                      name="pencil"
-                      size={24}
-                      color={colors.primary}
-                    />
-                  }
-                >
-                  Edit
-                </Button>
-              </Link>
             )}
 
             <Card shadow>
@@ -149,13 +133,11 @@ export const Bill = ({
             </Card>
 
             {!!data.expiry && (
-              <Card shadow>
-                <Text.H2>Due date</Text.H2>
-                <Text.Body>{formatToDate(data.expiry.toDate())}</Text.Body>
-              </Card>
+              <ExpiryDetails expiry={data?.expiry} expired={expired} />
             )}
           </>
         )}
+
         {view === "full" ? (
           <View
             style={{
@@ -194,23 +176,7 @@ export const Bill = ({
           </View>
         )}
 
-        {!!linkProps && view !== "full" && (
-          // @ts-ignore
-          <Link {...linkProps}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                paddingVertical: padding.sm,
-              }}
-            >
-              <Text.Span>See more</Text.Span>
-              <AntDesign name="arrowright" size={24} color={colors.primary} />
-            </View>
-          </Link>
-        )}
+        <SeeMore linkProps={linkProps} view={view} />
       </Card>
     </>
   );
