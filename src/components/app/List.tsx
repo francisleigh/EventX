@@ -94,7 +94,7 @@ export const List = ({
         editLinkHref={
           canEdit
             ? {
-                pathname: "/new-event-item",
+                pathname: "/event-item-form",
                 params: { eventId, eventItemId: listId },
               }
             : undefined

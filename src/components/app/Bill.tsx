@@ -1,5 +1,5 @@
 import { ListItem } from "~/components/app/ListItem";
-import { LinkProps } from "expo-router";
+import { Link, LinkProps } from "expo-router";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { gap, padding } from "~/constants/spacing";
@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useCallback, useMemo } from "react";
 import { formatCurrency, formatToDate } from "~/util";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
 import { Loading } from "~/components/app/Loading";
 import { BillPaymentDocument } from "~/types.firestore";
@@ -17,6 +17,7 @@ import {
 } from "~/components/core/FeatureHeading";
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
+import { Button } from "~/components/core/Button";
 
 type BillProps = {
   eventId: string;
@@ -91,7 +92,7 @@ export const Bill = ({
           editLinkHref={
             canEdit
               ? {
-                  pathname: "/new-event-item",
+                  pathname: "/event-item-form",
                   params: { eventId, eventItemId: billId },
                 }
               : undefined
@@ -109,19 +110,28 @@ export const Bill = ({
             )}
 
             <Card shadow>
-              <View
+              <Link
+                href={{
+                  pathname: "/bill-details-form",
+                  params: { eventId, id: billId },
+                }}
                 style={{
                   position: "absolute",
-                  top: padding["screen-y"],
-                  right: padding["screen-x"],
+                  top: padding.default,
+                  right: padding.default,
                 }}
+                asChild
               >
-                <MaterialCommunityIcons
-                  name="pencil"
-                  size={24}
-                  color={colors.primary}
-                />
-              </View>
+                <Button
+                  icon={
+                    <MaterialCommunityIcons
+                      name="pencil"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  }
+                ></Button>
+              </Link>
               <View>
                 <Text.H2>Owed</Text.H2>
                 <Text.Body>{totalFormatted}</Text.Body>

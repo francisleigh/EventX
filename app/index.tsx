@@ -46,7 +46,7 @@ export default function Page() {
 
         <Link
           href={{
-            pathname: "/new-event",
+            pathname: "/event-formt",
           }}
           asChild
         >

@@ -34,15 +34,19 @@ export type PollSchemaType = z.infer<typeof PollSchema>;
 export type PollOptionSchemaType = z.infer<typeof PollOptionSchema>;
 export type PollVoterSchemaType = z.infer<typeof PollVoterSchema>;
 
-export const BillSchema = EventItemSchema.extend({
+export const BillPaymentDetailsSchema = z.object({
   totalOwed: z.number(),
-  currency: z.string(),
+  currency: z.string().optional(),
 });
+export const BillSchema = EventItemSchema.and(BillPaymentDetailsSchema);
 export const BillPaymentSchema = z.object({
   quantity: z.number(),
 });
 
 export type BillSchemaType = z.infer<typeof BillSchema>;
+export type BillPaymentDetailsSchemaType = z.infer<
+  typeof BillPaymentDetailsSchema
+>;
 export type BillPaymentSchemaType = z.infer<typeof BillPaymentSchema>;
 
 export const ListSchema = EventItemSchema.extend({});

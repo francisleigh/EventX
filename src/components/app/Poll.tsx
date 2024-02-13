@@ -191,7 +191,7 @@ export const Poll = ({
         editLinkHref={
           canEdit
             ? {
-                pathname: "/new-event-item",
+                pathname: "/event-item-form",
                 params: { eventId, eventItemId: pollId },
               }
             : undefined
@@ -272,7 +272,7 @@ export const Poll = ({
           {expired ? null : (
             <Link
               href={{
-                pathname: "/new-poll-option",
+                pathname: "/poll-option-form",
                 params: {
                   eventId,
                   pollId: data.id,

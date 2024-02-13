@@ -2,11 +2,13 @@ import {
   type TextInputProps as RNTextInputProps,
   TextInput as RNTextInput,
   StyleSheet,
+  View,
 } from "react-native";
 import { sHeight } from "~/constants/layout";
 import { borderRadius, borderWidth } from "~/constants/borders";
-import { padding } from "~/constants/spacing";
+import { gap, padding } from "~/constants/spacing";
 import { colors } from "~/constants/colors";
+import { Text } from "~/components/core/Text";
 
 type TextInputProps = { error?: string } & RNTextInputProps;
 
@@ -17,12 +19,20 @@ export const TextInput = ({
   error,
   ...props
 }: Omit<TextInputProps, "style">) => {
+  console.log("error", error);
   return (
-    <RNTextInput
-      {...props}
-      {...sharedTextInputProps}
-      style={[styles.textInput, !!error && styles.error]}
-    />
+    <View style={{ gap: gap.xs }}>
+      <RNTextInput
+        {...props}
+        {...sharedTextInputProps}
+        style={[styles.textInput, !!error && styles.error]}
+      />
+      {!!error && (
+        <Text.Button style={{ fontSize: 8 }} color={colors.detail}>
+          {error}
+        </Text.Button>
+      )}
+    </View>
   );
 };
 

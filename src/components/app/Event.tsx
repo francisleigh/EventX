@@ -46,7 +46,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
         expired={expired}
         expiresSoon={expiresSoon}
         editLinkHref={{
-          pathname: "/new-event",
+          pathname: "/event-formt",
           params: { eventId },
         }}
       >
@@ -115,7 +115,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
           <Link
             href={{
-              pathname: "/new-event-item",
+              pathname: "/event-item-form",
               params: {
                 eventId,
               },

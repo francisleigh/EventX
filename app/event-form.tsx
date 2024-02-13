@@ -12,9 +12,7 @@ export default function NewEventPage() {
   const { data, preLoadingFormData } = usePreLoadFormData<EventSchemaType>(
     {
       query: async () => {
-        console.log("query eventId", eventId);
         const event = await getEvent(eventId as string);
-        console.log("event", event);
         if (event) {
           return {
             ...event,
