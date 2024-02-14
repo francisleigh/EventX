@@ -26,6 +26,7 @@ import {
 } from "~/components/core/FeatureHeading";
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
+import { EventItemDescription } from "~/components/core/EventItemDescription";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -200,10 +201,7 @@ export const Poll = ({
         {data.title}
       </FeatureHeading>
       {view === "full" && !!data.description && (
-        <Card shadow>
-          <Text.H2>Description</Text.H2>
-          <Text.Span>{data.description}</Text.Span>
-        </Card>
+        <EventItemDescription>{data.description}</EventItemDescription>
       )}
 
       {optionsBasedOnView?.map((option) => {
@@ -286,7 +284,7 @@ export const Poll = ({
 
           {!!data?.voters?.length && (
             <Card shadow>
-              <Text.H2>People</Text.H2>
+              <Text.Subheading>People</Text.Subheading>
               <View style={{ flexDirection: "row", gap: gap.xs }}>
                 {data.voters.slice(0, 7).map((vote) => (
                   <Avatar key={vote.userId} source={{ uri: vote.userId }} />

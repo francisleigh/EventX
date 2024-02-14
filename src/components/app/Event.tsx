@@ -19,6 +19,7 @@ import {
 } from "~/components/core/FeatureHeading";
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
+import { EventItemDescription } from "~/components/core/EventItemDescription";
 
 type EventProps = {
   eventId: string;
@@ -46,7 +47,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
         expired={expired}
         expiresSoon={expiresSoon}
         editLinkHref={{
-          pathname: "/event-formt",
+          pathname: "/event-form",
           params: { eventId },
         }}
       >
@@ -56,10 +57,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
       {view === "full" && (
         <>
           {data.description && (
-            <Card shadow>
-              <Text.H2>Description</Text.H2>
-              <Text.Span>{data.description}</Text.Span>
-            </Card>
+            <EventItemDescription>{data.description}</EventItemDescription>
           )}
 
           {!!data.start?.toDate && (

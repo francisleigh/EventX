@@ -1,6 +1,8 @@
 import {
+  BillPaymentSchemaType,
   EventItemSchemaType,
   EventSchemaType,
+  ListItemSchemaType,
   PollOptionSchemaType,
 } from "~/types.schema";
 import { firestore } from "~/backend";
@@ -20,6 +22,7 @@ import {
   BillRootDocument,
   EventDocument,
   EventItemBase,
+  ListItemDocument,
   ListRootDocument,
   PollOptionDocument,
   PollRootDocument,
@@ -246,4 +249,62 @@ export const getBillPayments = async (eventId: string, billId: string) => {
       id: d.id,
     };
   });
+};
+
+export const addPaymentToBill = async (
+  eventId: string,
+  billId: string,
+  data: BillPaymentSchemaType,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    billId,
+    "payments",
+  );
+  const docRef = await addDoc(ref, data);
+
+  return docRef.id;
+};
+
+export const getListItems = async (eventId: string, listId: string) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    listId,
+    "items",
+  );
+  const docs = await getDocs(ref);
+
+  if (docs.empty) return [];
+
+  return docs.docs.map((d) => {
+    const data = d.data() as ListItemDocument;
+    return {
+      ...data,
+      id: d.id,
+    };
+  });
+};
+
+export const addItemToList = async (
+  eventId: string,
+  listId: string,
+  data: ListItemSchemaType,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    listId,
+    "items",
+  );
+  const docRef = await addDoc(ref, data);
+
+  return docRef.id;
 };

@@ -12,7 +12,7 @@ export const ExpiryDetails = ({ expired, expiry }: Props) => {
 
   return (
     <Card shadow>
-      <Text.H2>Due date</Text.H2>
+      <Text.Subheading>Due date</Text.Subheading>
       <Text.Body>
         {formatToDate(expiry.toDate())}
         {expired && " - Ended"}

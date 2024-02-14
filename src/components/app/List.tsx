@@ -2,7 +2,7 @@ import { ListItem } from "~/components/app/ListItem";
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { gap } from "~/constants/spacing";
-import { LinkProps } from "expo-router";
+import { Link, LinkProps } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { useMemo } from "react";
@@ -16,12 +16,14 @@ import {
 } from "~/components/core/FeatureHeading";
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
+import { EventItemDescription } from "~/components/core/EventItemDescription";
+import { Button } from "~/components/core/Button";
 
 type ListProps = {
   eventId: string;
   listId: string;
 
-  onItemPress?: () => any;
+  onRefetchData?: () => any;
 
   linkProps?: LinkProps<any>;
 } & Pick<FeatureHeadingProps, "view">;
@@ -30,7 +32,7 @@ export const List = ({
   eventId,
   listId,
   view,
-  onItemPress,
+  onRefetchData,
   linkProps,
 }: ListProps) => {
   const { fetching, data, expiresSoon, expired, parentExpired, canEdit } =
@@ -61,6 +63,8 @@ export const List = ({
   );
 
   const statusIcon = useMemo(() => {
+    if (!allStatuses.length) return null;
+
     if (allStatuses.every((s) => s === "done")) {
       return <Entypo name="progress-full" size={24} color={colors.success} />;
     }
@@ -103,10 +107,7 @@ export const List = ({
         {data.title}{" "}
       </FeatureHeading>
       {view === "full" && !!data.description && (
-        <Card shadow>
-          <Text.H2>Description</Text.H2>
-          <Text.Span>{data.description}</Text.Span>
-        </Card>
+        <EventItemDescription>{data.description}</EventItemDescription>
       )}
 
       {view === "full" ? (
@@ -119,9 +120,23 @@ export const List = ({
             <ListItem
               key={item.id}
               {...item}
-              onItemPress={view === "full" ? onItemPress : undefined}
+              // onItemPress={view === "full" ? onItemPress : undefined}
             />
           ))}
+          {expired ? null : (
+            <Link
+              href={{
+                pathname: "/list-item-form",
+                params: {
+                  eventId,
+                  listId,
+                },
+              }}
+              asChild
+            >
+              <Button icon={<Text.Button>+</Text.Button>}>Add item</Button>
+            </Link>
+          )}
         </View>
       ) : (
         <View

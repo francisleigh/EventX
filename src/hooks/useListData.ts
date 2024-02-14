@@ -1,9 +1,10 @@
 import { ClientListDocument } from "~/types.client";
 import { useEffect, useMemo, useState } from "react";
-import { getList, getListItems } from "~/tempdb";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
 import { expiresSoon, hasExpired } from "~/util";
 import { useEventData } from "~/hooks/useEventData";
+import { getEventItem, getListItems } from "~/db";
+import { Timestamp } from "@react-native-firebase/firestore/lib/modular/Timestamp";
 
 type RTN = UseEventItemDataHookRTN<ClientListDocument> & {};
 export const useListData = ({
@@ -27,20 +28,17 @@ export const useListData = ({
   const getData = async () => {
     setFetching(true);
     try {
-      const bill = await getList(eventId, listId);
+      const list = await getEventItem(eventId, listId);
 
       const nextData: RTN["data"] = {
-        ...bill,
+        ...list,
         type: "list",
         id: listId,
         items: [],
       };
 
-      const listItems = await getListItems(listId);
-      if (listItems)
-        nextData.items = Object.entries(listItems).map(
-          ([itemId, listItem]) => ({ id: itemId, ...listItem }),
-        );
+      const listItems = await getListItems(eventId, listId);
+      if (listItems) nextData.items = listItems;
 
       setData(nextData);
     } catch (e) {

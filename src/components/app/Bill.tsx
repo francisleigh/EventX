@@ -19,6 +19,7 @@ import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { Button } from "~/components/core/Button";
 import * as Clipboard from "expo-clipboard";
+import { EventItemDescription } from "~/components/core/EventItemDescription";
 
 type BillProps = {
   eventId: string;
@@ -104,20 +105,29 @@ export const Bill = ({
         {view === "full" && (
           <>
             {data.description && (
-              <Card shadow>
-                <Text.H2>Description</Text.H2>
-                <Text.Span>{data.description}</Text.Span>
-              </Card>
+              <EventItemDescription>{data.description}</EventItemDescription>
             )}
 
             <Card shadow>
-              <View>
-                <Text.H2>Owed</Text.H2>
-                <Text.Body>{totalFormatted}</Text.Body>
-              </View>
-              <View>
-                <Text.H2>Paid</Text.H2>
-                <Text.Body>{paidFormatted}</Text.Body>
+              <View
+                style={{
+                  gap: gap.sm,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>
+                  <Text.Subheading>Total owed</Text.Subheading>
+                  <Text.Body>{totalFormatted}</Text.Body>
+                </View>
+                <View>
+                  <Text.Subheading style={{ textAlign: "right" }}>
+                    Paid
+                  </Text.Subheading>
+                  <Text.Body style={{ textAlign: "right" }}>
+                    {paidFormatted}
+                  </Text.Body>
+                </View>
               </View>
               <Card>
                 <Text.Subheading>Payment details</Text.Subheading>
@@ -126,58 +136,78 @@ export const Bill = ({
                 <CopyItem value={data.sortCode} />
               </Card>
 
-              <Link
-                href={{
-                  pathname: "/bill-details-form",
-                  params: { eventId, id: billId },
-                }}
-                style={{
-                  position: "absolute",
-                  borderWidth: 1,
-                  borderColor: "red",
-                  top: padding.default,
-                  right: padding.default,
-                }}
-                asChild
-              >
-                <Button
-                  icon={
-                    <MaterialCommunityIcons
-                      name="pencil"
-                      size={24}
-                      color={colors.primary}
-                    />
-                  }
-                />
-              </Link>
+              {canEdit && (
+                <Link
+                  href={{
+                    pathname: "/bill-details-form",
+                    params: { eventId, id: billId },
+                  }}
+                  style={{
+                    position: "absolute",
+                    borderWidth: 1,
+                    borderColor: "red",
+                    top: padding.default,
+                    right: padding.default,
+                  }}
+                  asChild
+                >
+                  <Button
+                    icon={
+                      <MaterialCommunityIcons
+                        name="pencil"
+                        size={24}
+                        color={colors.primary}
+                      />
+                    }
+                  />
+                </Link>
+              )}
             </Card>
+          </>
+        )}
+
+        {view === "full" ? (
+          <>
+            <View
+              style={{
+                gap: gap.sm,
+              }}
+            >
+              {!!paymentsBasedOnView &&
+                paymentsBasedOnView.map((payment) => (
+                  <ListItem
+                    key={payment.id}
+                    title={`Paid ${formatCurrency(payment.quantity!)}`}
+                    quantitySymbol={"£"}
+                    onItemPress={
+                      view === "full" && handlePaymentItemPress
+                        ? () => handlePaymentItemPress(payment)
+                        : undefined
+                    }
+                  />
+                ))}
+              {expired ? null : (
+                <Link
+                  href={{
+                    pathname: "/bill-payment-form",
+                    params: {
+                      eventId,
+                      billId,
+                    },
+                  }}
+                  asChild
+                >
+                  <Button icon={<Text.Button>+</Text.Button>}>
+                    Add payment
+                  </Button>
+                </Link>
+              )}
+            </View>
 
             {!!data.expiry && (
               <ExpiryDetails expiry={data?.expiry} expired={expired} />
             )}
           </>
-        )}
-
-        {view === "full" ? (
-          <View
-            style={{
-              gap: gap.sm,
-            }}
-          >
-            {!!paymentsBasedOnView &&
-              paymentsBasedOnView.map((payment) => (
-                <ListItem
-                  key={payment.id}
-                  title={`Paid ${formatCurrency(payment.quantity!)}`}
-                  quantitySymbol={"£"}
-                  onItemPress={
-                    view === "full" && handlePaymentItemPress
-                      ? () => handlePaymentItemPress(payment)
-                      : undefined
-                  }
-                />
-              ))}
-          </View>
         ) : (
           <View
             style={{
@@ -213,7 +243,7 @@ const CopyItem = ({ value }: { value: string }) => {
     } finally {
       setTimeout(() => {
         setCopied(false);
-      }, 500);
+      }, 1000);
     }
   }, [value]);
 

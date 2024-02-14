@@ -44,7 +44,8 @@ export const BillPaymentDetailsSchema = z.object({
 });
 export const BillSchema = EventItemSchema.and(BillPaymentDetailsSchema);
 export const BillPaymentSchema = z.object({
-  quantity: z.number(),
+  userId: z.string(),
+  quantity: z.number().transform(Number),
 });
 
 export type BillSchemaType = z.infer<typeof BillSchema>;

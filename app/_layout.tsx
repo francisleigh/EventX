@@ -35,6 +35,20 @@ export default function Layout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="bill-payment-form"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
+        <Stack.Screen
+          name="list-item-form"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
 
         <Stack.Screen
           name="event"
