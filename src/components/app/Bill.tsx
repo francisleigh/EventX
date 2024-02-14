@@ -5,7 +5,7 @@ import { Text } from "~/components/core/Text";
 import { gap, padding } from "~/constants/spacing";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { formatCurrency, formatToDate } from "~/util";
 import { TouchableOpacity, View } from "react-native";
 import { useBillData } from "~/hooks/useBillData";
@@ -18,6 +18,7 @@ import {
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { Button } from "~/components/core/Button";
+import * as Clipboard from "expo-clipboard";
 
 type BillProps = {
   eventId: string;
@@ -110,6 +111,21 @@ export const Bill = ({
             )}
 
             <Card shadow>
+              <View>
+                <Text.H2>Owed</Text.H2>
+                <Text.Body>{totalFormatted}</Text.Body>
+              </View>
+              <View>
+                <Text.H2>Paid</Text.H2>
+                <Text.Body>{paidFormatted}</Text.Body>
+              </View>
+              <Card>
+                <Text.Subheading>Payment details</Text.Subheading>
+                <CopyItem value={data.accountPayeeName} />
+                <CopyItem value={data.accountNumber} />
+                <CopyItem value={data.sortCode} />
+              </Card>
+
               <Link
                 href={{
                   pathname: "/bill-details-form",
@@ -117,6 +133,8 @@ export const Bill = ({
                 }}
                 style={{
                   position: "absolute",
+                  borderWidth: 1,
+                  borderColor: "red",
                   top: padding.default,
                   right: padding.default,
                 }}
@@ -130,16 +148,8 @@ export const Bill = ({
                       color={colors.primary}
                     />
                   }
-                ></Button>
+                />
               </Link>
-              <View>
-                <Text.H2>Owed</Text.H2>
-                <Text.Body>{totalFormatted}</Text.Body>
-              </View>
-              <View>
-                <Text.H2>Paid</Text.H2>
-                <Text.Body>{paidFormatted}</Text.Body>
-              </View>
             </Card>
 
             {!!data.expiry && (
@@ -189,5 +199,44 @@ export const Bill = ({
         <SeeMore linkProps={linkProps} view={view} />
       </Card>
     </>
+  );
+};
+
+const CopyItem = ({ value }: { value: string }) => {
+  const [copied, setCopied] = useState<boolean>(false);
+  const handlePress = useCallback(async () => {
+    try {
+      await Clipboard.setStringAsync(value);
+      setCopied(true);
+    } catch (e) {
+      console.log("CopyItem -> handlePress error", e);
+    } finally {
+      setTimeout(() => {
+        setCopied(false);
+      }, 500);
+    }
+  }, [value]);
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+      disabled={copied}
+    >
+      <Text.Span>{value}</Text.Span>
+
+      {copied && (
+        <Text.Span style={{ color: colors.success }}>Copied!</Text.Span>
+      )}
+
+      <MaterialCommunityIcons
+        name="content-copy"
+        size={24}
+        color={colors.primary}
+      />
+    </TouchableOpacity>
   );
 };

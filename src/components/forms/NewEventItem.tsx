@@ -121,7 +121,7 @@ export const NewEventItemForm = ({
         name={"title"}
         render={({ field, fieldState }) => (
           <TextInput
-            placeholder={"Title"}
+            label={"Title"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
@@ -135,7 +135,7 @@ export const NewEventItemForm = ({
         name={"description"}
         render={({ field, fieldState }) => (
           <TextArea
-            placeholder={"Description"}
+            label={"Description"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}

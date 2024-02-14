@@ -9,10 +9,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { updateExistingEventItem } from "~/db";
-import { removeUndefinedFields } from "~/util";
+import {
+  formatToSortCode,
+  removeAllWhitespace,
+  removeUndefinedFields,
+} from "~/util";
+import { Text } from "~/components/core/Text";
 import { TextInput } from "~/components/core/FormElements";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { Button } from "~/components/core/Button";
+import { View } from "react-native";
+import { gap } from "~/constants/spacing";
+import { Card } from "~/components/core/Layout";
 
 export type BillPaymentDetailsFormProps = {
   eventId: string;
@@ -61,24 +69,76 @@ export const BillPaymentDetailsForm = ({
       <Controller
         control={control}
         name={"totalOwed"}
-        render={({ field, fieldState, formState }) => {
-          console.log("field", field);
-          console.log("fieldstate", fieldState);
-          console.log("formstate", formState);
-          return (
+        render={({ field, fieldState, formState }) => (
+          <TextInput
+            label={"Total owed"}
+            value={field.value ? String(field.value) : undefined}
+            keyboardType={"numeric"}
+            onChangeText={(numberAsString) =>
+              field.onChange(numberAsString ? +numberAsString : null)
+            }
+            aria-disabled={field.disabled}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
+
+      <Card>
+        <Text.Subheading>Payment details</Text.Subheading>
+
+        <Controller
+          control={control}
+          name={"accountPayeeName"}
+          render={({ field, fieldState, formState }) => (
             <TextInput
-              placeholder={"Total owed"}
+              label={"Name on account"}
               value={field.value ? String(field.value) : undefined}
-              keyboardType={"numeric"}
-              onChangeText={(numberAsString) =>
-                field.onChange(numberAsString ? +numberAsString : null)
-              }
+              onChangeText={field.onChange}
               aria-disabled={field.disabled}
               error={fieldState.error?.message}
             />
-          );
-        }}
-      />
+          )}
+        />
+
+        <View style={{ flexDirection: "row", gap: gap.default }}>
+          <Controller
+            control={control}
+            name={"accountNumber"}
+            render={({ field, fieldState, formState }) => (
+              <TextInput
+                label={"Account number"}
+                value={field.value ? String(field.value) : undefined}
+                keyboardType={"numeric"}
+                onChangeText={(value) =>
+                  field.onChange(removeAllWhitespace(value))
+                }
+                aria-disabled={field.disabled}
+                error={fieldState.error?.message}
+              />
+            )}
+          />
+
+          <View style={{ flex: 0.39 }}>
+            <Controller
+              control={control}
+              name={"sortCode"}
+              render={({ field, fieldState, formState }) => (
+                <TextInput
+                  label={"Sort code"}
+                  value={field.value}
+                  keyboardType={"numbers-and-punctuation"}
+                  maxLength={8}
+                  onChangeText={(value = "") =>
+                    field.onChange(formatToSortCode(value))
+                  }
+                  aria-disabled={field.disabled}
+                  error={fieldState.error?.message}
+                />
+              )}
+            />
+          </View>
+        </View>
+      </Card>
 
       {!!submissionError && <ErrorBox error={submissionError} />}
 

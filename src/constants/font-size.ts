@@ -9,4 +9,6 @@ export const fontSize = {
   body: sWidth * (19 / base_px_to_pt),
   span: sWidth * (19 / base_px_to_pt) * 0.8,
   button: sWidth * (15 / base_px_to_pt),
+  subheading: sWidth * (15 / base_px_to_pt),
+  label: sWidth * (11 / base_px_to_pt),
 };

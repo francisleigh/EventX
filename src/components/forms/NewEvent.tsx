@@ -72,7 +72,7 @@ export const NewEventForm = (props: Props) => {
         name={"title"}
         render={({ field, fieldState }) => (
           <TextInput
-            placeholder={"Title"}
+            label={"Title"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
@@ -86,7 +86,7 @@ export const NewEventForm = (props: Props) => {
         name={"description"}
         render={({ field, fieldState }) => (
           <TextArea
-            placeholder={"Description"}
+            label={"Description"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}

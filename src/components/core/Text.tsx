@@ -57,6 +57,24 @@ Base.H2 = ({ children, style, ...props }: TextProps) => {
   );
 };
 
+Base.Subheading = ({ children, style, ...props }: TextProps) => {
+  return (
+    <RNText
+      style={[
+        {
+          fontSize: fontSize.subheading,
+          fontWeight: "bold",
+          color: colors.primary,
+        },
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </RNText>
+  );
+};
+
 Base.Body = ({ children, style, ...props }: TextProps) => {
   return (
     <RNText
@@ -107,6 +125,34 @@ Base.Button = ({
           fontWeight: "bold",
           color: color ?? colors.primary,
         },
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </RNText>
+  );
+};
+
+Base.Label = ({
+  children,
+  style,
+  color,
+  bold,
+  ...props
+}: TextProps & {
+  color?: (typeof colors)[keyof typeof colors] | "transparent";
+  bold?: boolean;
+}) => {
+  return (
+    <RNText
+      style={[
+        {
+          fontSize: fontSize.label,
+
+          color: color ?? colors.primary,
+        },
+        bold && { fontWeight: "bold" },
         style,
       ]}
       {...props}

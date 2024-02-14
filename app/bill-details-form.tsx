@@ -24,6 +24,9 @@ export default function BillPaymentDetailsPage() {
           if (bill.totalOwed) {
             return {
               totalOwed: bill.totalOwed,
+              accountNumber: bill.accountNumber,
+              accountPayeeName: bill.accountPayeeName,
+              sortCode: bill.sortCode,
             };
           }
 

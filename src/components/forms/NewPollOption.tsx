@@ -78,7 +78,7 @@ export const NewPollOptionForm = ({
         name={"label"}
         render={({ field, fieldState }) => (
           <TextInput
-            placeholder={"Label"}
+            label={"Label"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
@@ -92,7 +92,7 @@ export const NewPollOptionForm = ({
         name={"link"}
         render={({ field, fieldState }) => (
           <TextInput
-            placeholder={"Link"}
+            label={"Link"}
             value={field.value}
             onChangeText={field.onChange}
             aria-disabled={field.disabled}
