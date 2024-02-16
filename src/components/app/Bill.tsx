@@ -120,15 +120,15 @@ export const Bill = ({
               >
                 <View>
                   <Text.Subheading>Total owed</Text.Subheading>
-                  <Text.Body>{totalFormatted}</Text.Body>
+                  <Text.Span>{totalFormatted}</Text.Span>
                 </View>
                 <View>
                   <Text.Subheading style={{ textAlign: "right" }}>
                     Paid
                   </Text.Subheading>
-                  <Text.Body style={{ textAlign: "right" }}>
+                  <Text.Span style={{ textAlign: "right" }}>
                     {paidFormatted}
-                  </Text.Body>
+                  </Text.Span>
                 </View>
               </View>
               <Card spacingVariant={"sm"}>
@@ -216,7 +216,7 @@ export const Bill = ({
             }}
           >
             <View>
-              <Text.Body>{totalFormatted} owed</Text.Body>
+              <Text.Span>{totalFormatted} owed</Text.Span>
               <Text.Span>
                 {totalPaid ? `${paidFormatted} paid` : "Nothing paid"}
               </Text.Span>

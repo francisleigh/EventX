@@ -75,6 +75,9 @@ Base.Subheading = ({ children, style, ...props }: TextProps) => {
   );
 };
 
+/*
+ * @deprecated Needs re work, style-wise, project uses Text.Span at the moment instead.
+ * */
 Base.Body = ({ children, style, ...props }: TextProps) => {
   return (
     <RNText

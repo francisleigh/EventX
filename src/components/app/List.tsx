@@ -154,7 +154,7 @@ export const List = ({
           }}
         >
           <View>
-            <Text.Body>{data.items.length} items</Text.Body>
+            <Text.Span>{data.items.length} items</Text.Span>
             {!!totalAssignees ? (
               <Text.Span>
                 {totalAssignees} assignee{totalAssignees > 1 ? "s" : ""}

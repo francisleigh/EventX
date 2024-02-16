@@ -63,7 +63,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           {!!data.start?.toDate && (
             <Card shadow>
               <Text.H2>Event date</Text.H2>
-              <Text.Body>{formatToDate(data.start.toDate())}</Text.Body>
+              <Text.Span>{formatToDate(data.start.toDate())}</Text.Span>
             </Card>
           )}
 
