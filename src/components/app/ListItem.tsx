@@ -2,8 +2,9 @@ import { Touchable, TouchableOpacity, View } from "react-native";
 import { Avatar } from "~/components/app/Avatar";
 import { useEffect, useState } from "react";
 import { Text } from "~/components/core/Text";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
+import { gap } from "~/constants/spacing";
 
 type ListItemProps = {
   title: string;
@@ -19,8 +20,7 @@ export const ListItem = ({
   quantity,
   quantitySymbol = "x ",
   status = "pending",
-  onItemPress,
-}: ListItemProps & { onItemPress?: (() => any) | undefined }) => {
+}: ListItemProps) => {
   const [avatarSource, setAvatarSource] = useState<string | undefined>(
     assignee ? "https://i.pravatar.cc/300" : undefined,
   );
@@ -30,33 +30,45 @@ export const ListItem = ({
   }, [assignee]);
 
   return (
-    <TouchableOpacity
-      activeOpacity={onItemPress ? undefined : 1}
-      onPress={() => onItemPress && onItemPress()}
+    <View
       style={{
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        width: "100%",
       }}
     >
-      <Text.Body
+      <Text.Label
         style={{
           textDecorationLine: status === "done" ? "line-through" : "none",
         }}
       >
         {title}
         {!!quantity && ` ${quantitySymbol}${quantity}`}
-      </Text.Body>
+      </Text.Label>
 
-      {status === "done" && (
-        <Ionicons
-          name="checkmark-circle-sharp"
-          size={24}
-          color={colors.success}
-        />
-      )}
+      <View
+        style={{
+          flexDirection: "row",
+          gap: gap.sm,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {status === "done" && (
+          <Ionicons
+            name="checkmark-circle-sharp"
+            size={24}
+            color={colors.success}
+          />
+        )}
 
-      <Avatar source={avatarSource ? { uri: avatarSource } : undefined} />
-    </TouchableOpacity>
+        {status === "pending" && (
+          <MaterialIcons name="pending" size={24} color={colors.primary} />
+        )}
+
+        <Avatar source={avatarSource ? { uri: avatarSource } : undefined} />
+      </View>
+    </View>
   );
 };

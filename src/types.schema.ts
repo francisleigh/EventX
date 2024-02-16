@@ -59,7 +59,7 @@ export const ListItemSchema = z.object({
   title: z.string(),
   quantity: z.number().optional(),
 
-  status: z.union([z.literal("pending"), z.literal("done")]),
+  status: z.union([z.literal("pending"), z.literal("done")]).default("pending"),
 });
 
 export type ListSchemaType = z.infer<typeof ListSchema>;

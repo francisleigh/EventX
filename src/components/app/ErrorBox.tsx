@@ -8,7 +8,7 @@ export const ErrorBox = ({ error }: ErrorBoxProps) => {
   const e: ErrorBoxProps["error"] = typeof error === "string" ? [error] : error;
 
   return (
-    <Card variant={"error"}>
+    <Card colorVariant={"error"}>
       <Text.Subheading>Error</Text.Subheading>
       {e.map((msg, i) => (
         <Text.Span key={`error_box_message_${i}_${msg}`}>{msg}</Text.Span>

@@ -86,7 +86,7 @@ export const List = ({
 
   return (
     <Card
-      variant={expiresSoon ? "error" : undefined}
+      colorVariant={expiresSoon ? "error" : undefined}
       shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
@@ -109,6 +109,9 @@ export const List = ({
       {view === "full" && !!data.description && (
         <EventItemDescription>{data.description}</EventItemDescription>
       )}
+      {view === "full" && !!data?.expiry && (
+        <ExpiryDetails expiry={data?.expiry} expired={expired} />
+      )}
 
       {view === "full" ? (
         <View
@@ -117,11 +120,14 @@ export const List = ({
           }}
         >
           {itemsBasedOnView.map((item) => (
-            <ListItem
-              key={item.id}
-              {...item}
-              // onItemPress={view === "full" ? onItemPress : undefined}
-            />
+            <Link
+              href={{
+                pathname: "/list-item-controls",
+                params: { eventId, listId, id: item.id },
+              }}
+            >
+              <ListItem key={item.id} {...item} />
+            </Link>
           ))}
           {expired ? null : (
             <Link
@@ -160,10 +166,6 @@ export const List = ({
 
           {statusIcon}
         </View>
-      )}
-
-      {view === "full" && (
-        <ExpiryDetails expiry={data?.expiry} expired={expired} />
       )}
 
       <SeeMore linkProps={linkProps} view={view} />

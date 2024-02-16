@@ -308,3 +308,55 @@ export const addItemToList = async (
 
   return docRef.id;
 };
+
+export const assignUserToListItem = async (
+  eventId: string,
+  listId: string,
+  listItemId: string,
+  userId: string,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    listId,
+    "items",
+  );
+  const listItemDocRef = doc(ref, listItemId);
+  const listItemDoc = await getDoc(listItemDocRef);
+  if (listItemDoc.exists()) {
+    const data = listItemDoc.data() as unknown as ListItemDocument;
+    if (!!userId && !!data.userId) {
+      throw new Error(`Item is already assigned.`);
+    }
+
+    await updateDoc(listItemDocRef, { userId } as Partial<ListItemDocument>);
+  }
+
+  return listItemDoc.id;
+};
+
+export const updateListItem = async (
+  eventId: string,
+  listId: string,
+  listItemId: string,
+  data: Partial<ListItemDocument>,
+) => {
+  const ref = collection(
+    firestore,
+    "events",
+    eventId,
+    "items",
+    listId,
+    "items",
+  );
+  const listItemDocRef = doc(ref, listItemId);
+  const listItemDoc = await getDoc(listItemDocRef);
+
+  if (listItemDoc.exists()) {
+    await updateDoc(listItemDocRef, data);
+  }
+
+  return listItemDocRef.id;
+};

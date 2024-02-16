@@ -82,7 +82,7 @@ export const Bill = ({
   return (
     <>
       <Card
-        variant={settled ? "success" : expiresSoon ? "error" : undefined}
+        colorVariant={settled ? "success" : expiresSoon ? "error" : undefined}
         shadow={view !== "full" && expiresSoon}
         style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
       >
@@ -107,7 +107,9 @@ export const Bill = ({
             {data.description && (
               <EventItemDescription>{data.description}</EventItemDescription>
             )}
-
+            {!!data.expiry && (
+              <ExpiryDetails expiry={data?.expiry} expired={expired} />
+            )}
             <Card shadow>
               <View
                 style={{
@@ -129,7 +131,7 @@ export const Bill = ({
                   </Text.Body>
                 </View>
               </View>
-              <Card>
+              <Card spacingVariant={"sm"}>
                 <Text.Subheading>Payment details</Text.Subheading>
                 <CopyItem value={data.accountPayeeName} />
                 <CopyItem value={data.accountNumber} />
@@ -203,10 +205,6 @@ export const Bill = ({
                 </Link>
               )}
             </View>
-
-            {!!data.expiry && (
-              <ExpiryDetails expiry={data?.expiry} expired={expired} />
-            )}
           </>
         ) : (
           <View

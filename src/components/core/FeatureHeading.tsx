@@ -7,6 +7,7 @@ import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "~/constants/colors";
 import { Button } from "~/components/core/Button";
 import { gap, padding } from "~/constants/spacing";
+import { canGoBack } from "expo-router/build/global-state/routing";
 
 type HREF = LinkProps<any>["href"];
 export type FeatureHeadingProps = {
@@ -44,44 +45,43 @@ export const FeatureHeading = ({
             </TouchableOpacity>
           )}
 
-          {!!editLinkHref && view === "full" && (
-            // @ts-ignore
-            <Link href={editLinkHref} asChild>
-              <TouchableOpacity style={styles.headerButton}>
-                <MaterialCommunityIcons
-                  name="pencil"
-                  size={24}
-                  color={colors.primary}
-                />
-              </TouchableOpacity>
-            </Link>
-          )}
+          <View style={styles.headerIconContainer}>
+            {router.canGoBack() && (
+              <>
+                {parentExpired || expired ? (
+                  <MaterialCommunityIcons
+                    name="coffin"
+                    size={24}
+                    color={colors.primary}
+                  />
+                ) : expiresSoon ? (
+                  <MaterialCommunityIcons
+                    name="clock-alert"
+                    size={24}
+                    color={colors.detail}
+                  />
+                ) : null}
+              </>
+            )}
+
+            {!!editLinkHref && view === "full" && (
+              // @ts-ignore
+              <Link href={editLinkHref} asChild>
+                <TouchableOpacity style={styles.headerButton}>
+                  <MaterialCommunityIcons
+                    name="pencil"
+                    size={24}
+                    color={colors.primary}
+                  />
+                </TouchableOpacity>
+              </Link>
+            )}
+          </View>
         </View>
       )}
 
       <View style={styles.titleContainer}>
-        <TitleBasedOnView>
-          {children}
-          {parentExpired ? (
-            <>
-              {" "}
-              <MaterialCommunityIcons
-                name="coffin"
-                size={24}
-                color={colors.primary}
-              />
-            </>
-          ) : expiresSoon ? (
-            <>
-              {" "}
-              <MaterialCommunityIcons
-                name="clock-alert"
-                size={24}
-                color={colors.detail}
-              />
-            </>
-          ) : null}
-        </TitleBasedOnView>
+        <TitleBasedOnView>{children}</TitleBasedOnView>
       </View>
     </View>
   );
@@ -95,6 +95,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  headerIconContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: gap.sm,
   },
   headerButton: {
     padding: padding.sm,

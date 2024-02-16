@@ -38,7 +38,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
   return (
     <Card
-      variant={expiresSoon ? "error" : undefined}
+      colorVariant={expiresSoon ? "error" : undefined}
       shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >

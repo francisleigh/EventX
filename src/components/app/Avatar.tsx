@@ -3,7 +3,7 @@ import { Dot } from "~/components/core/Dot";
 import { colors } from "~/constants/colors";
 import { sWidth } from "~/constants/layout";
 
-const size = 40;
+const size = 30;
 
 type AvatarProps = Partial<Pick<ImageProps, "source">>;
 

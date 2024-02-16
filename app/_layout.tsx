@@ -49,6 +49,13 @@ export default function Layout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="list-item-controls"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
 
         <Stack.Screen
           name="event"

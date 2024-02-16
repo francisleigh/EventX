@@ -51,11 +51,13 @@ const variantToColorMap = {
 export const Card = ({
   children,
   shadow,
-  variant,
+  colorVariant,
+  spacingVariant,
   style,
 }: ContainerProps & {
   shadow?: boolean;
-  variant?: keyof typeof variantToColorMap;
+  colorVariant?: keyof typeof variantToColorMap;
+  spacingVariant?: keyof typeof gap;
   style?: StyleProp<ViewStyle>;
 }) => {
   return (
@@ -65,11 +67,11 @@ export const Card = ({
           backgroundColor: colors.secondary,
           borderWidth: borderWidth.container,
           borderRadius: borderRadius.container,
-          borderColor: variant
-            ? variantToColorMap[variant] ?? colors.primary
+          borderColor: colorVariant
+            ? variantToColorMap[colorVariant] ?? colors.primary
             : colors.primary,
           padding: padding.default,
-          gap: gap.default,
+          gap: spacingVariant ? gap[spacingVariant] : gap.default,
         },
         shadow && {
           shadowColor: colors.primary,

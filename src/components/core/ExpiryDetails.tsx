@@ -11,12 +11,20 @@ export const ExpiryDetails = ({ expired, expiry }: Props) => {
   if (!expiry) return null;
 
   return (
-    <Card shadow>
+    <Card
+      shadow
+      spacingVariant={"sm"}
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
       <Text.Subheading>Due date</Text.Subheading>
-      <Text.Body>
+      <Text.Span>
         {formatToDate(expiry.toDate())}
         {expired && " - Ended"}
-      </Text.Body>
+      </Text.Span>
     </Card>
   );
 };

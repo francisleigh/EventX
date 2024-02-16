@@ -180,7 +180,7 @@ export const Poll = ({
 
   return (
     <Card
-      variant={expiresSoon ? "error" : undefined}
+      colorVariant={expiresSoon ? "error" : undefined}
       shadow={view !== "full" && expiresSoon}
       style={view === "full" && { borderWidth: 0, paddingHorizontal: 0 }}
     >
@@ -202,6 +202,10 @@ export const Poll = ({
       </FeatureHeading>
       {view === "full" && !!data.description && (
         <EventItemDescription>{data.description}</EventItemDescription>
+      )}
+
+      {view === "full" && !!data?.expiry && (
+        <ExpiryDetails expiry={data?.expiry} expired={expired} />
       )}
 
       {optionsBasedOnView?.map((option) => {
@@ -231,12 +235,12 @@ export const Poll = ({
                 paddingTop: 0,
               }}
             >
-              <Text.Body>{option.label}</Text.Body>
+              <Text.Span>{option.label}</Text.Span>
               {view === "full" && !!option.link && (
                 <TouchableOpacity onPress={() => handleOpenLink(option)}>
-                  <Text.Span style={{ textDecorationLine: "underline" }}>
+                  <Text.Label style={{ textDecorationLine: "underline" }}>
                     {option.link}
-                  </Text.Span>
+                  </Text.Label>
                 </TouchableOpacity>
               )}
             </View>
@@ -283,7 +287,7 @@ export const Poll = ({
           )}
 
           {!!data?.voters?.length && (
-            <Card shadow>
+            <Card shadow spacingVariant={"sm"}>
               <Text.Subheading>People</Text.Subheading>
               <View style={{ flexDirection: "row", gap: gap.xs }}>
                 {data.voters.slice(0, 7).map((vote) => (
@@ -300,8 +304,6 @@ export const Poll = ({
               </View>
             </Card>
           )}
-
-          <ExpiryDetails expiry={data?.expiry} expired={expired} />
         </>
       )}
 
