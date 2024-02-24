@@ -3,7 +3,7 @@ import { EventItemSchema, EventItemSchemaType } from "~/types.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useState } from "react";
-import { TextArea, TextInput } from "~/components/core/FormElements";
+import { DayPicker, TextArea, TextInput } from "~/components/core/FormElements";
 import {
   createEventItem,
   updateExistingEvent,
@@ -31,7 +31,6 @@ export const NewEventItemForm = ({
   const { control, handleSubmit } = useForm<EventItemSchemaType>({
     defaultValues: {
       ...(defaultValues ?? {}),
-      expiry: addDays(new Date(), 7),
     },
     resolver: zodResolver(EventItemSchema),
   });
@@ -144,10 +143,10 @@ export const NewEventItemForm = ({
         control={control}
         name={"expiry"}
         render={({ field }) => (
-          <View style={{ gap: gap.xs }}>
-            <Text.Span>Due date</Text.Span>
-            <Text.H2>{field?.value?.toDateString()}</Text.H2>
-          </View>
+          <DayPicker
+            value={field.value}
+            onChange={(v) => field.onChange(v ?? undefined)}
+          />
         )}
       />
 

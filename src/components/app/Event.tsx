@@ -61,10 +61,11 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           )}
 
           {!!data.start?.toDate && (
-            <Card shadow>
-              <Text.H2>Event date</Text.H2>
-              <Text.Span>{formatToDate(data.start.toDate())}</Text.Span>
-            </Card>
+            <ExpiryDetails
+              title={"Event date"}
+              expiry={data.start}
+              expired={expired}
+            />
           )}
 
           {!noItems && <Text.H1>Items</Text.H1>}

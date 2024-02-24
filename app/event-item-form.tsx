@@ -12,18 +12,26 @@ export default function NewEventItemPage() {
   const { data, preLoadingFormData } = usePreLoadFormData<EventItemSchemaType>(
     {
       query: async () => {
-        const eventItem = getEventItem(
+        const eventItem = await getEventItem(
           eventId as string,
           eventItemId as string,
         );
-        return eventItem ?? undefined;
+
+        return (
+          { ...eventItem, expiry: eventItem?.expiry?.toDate() } ?? undefined
+        );
       },
     },
     [eventId, eventItemId],
   );
 
+  console.log("form data", data);
+
   return (
-    <PageContainer type={"modal"}>
+    <PageContainer
+      type={"modal"}
+      scrollViewProps={{ nestedScrollEnabled: true }}
+    >
       <Text.H1>{eventItemId ? "Edit event item" : "New event item"}</Text.H1>
       {preLoadingFormData ? (
         <Loading />

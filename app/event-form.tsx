@@ -28,7 +28,10 @@ export default function NewEventPage() {
   );
 
   return (
-    <PageContainer type={"modal"}>
+    <PageContainer
+      type={"modal"}
+      scrollViewProps={{ nestedScrollEnabled: true }}
+    >
       <Text.H1>{eventId ? "Edit event" : "New event"}</Text.H1>
       {preLoadingFormData ? (
         <Loading />

@@ -3,13 +3,16 @@ import { EventSchema, EventSchemaType } from "~/types.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useState } from "react";
-import { TextArea, TextInput } from "~/components/core/FormElements";
+import {
+  DateRangePicker,
+  TextArea,
+  TextInput,
+} from "~/components/core/FormElements";
 import { createNewEvent, updateExistingEvent } from "~/db";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { temp_userid } from "~/tempuser";
 import { removeUndefinedFields } from "~/util";
-import { addDays } from "date-fns";
 
 type Props = {
   eventId?: string;
@@ -17,12 +20,12 @@ type Props = {
 };
 
 export const NewEventForm = (props: Props) => {
-  const { control, handleSubmit } = useForm<EventSchemaType>({
+  const { control, handleSubmit, watch, setValue } = useForm<EventSchemaType>({
     defaultValues: {
       owner: temp_userid,
       ...(props.defaultValues ?? {}),
-      start: new Date(),
-      end: addDays(new Date(), 7),
+      start: props.defaultValues?.start,
+      end: props.defaultValues?.end,
     },
     resolver: zodResolver(EventSchema),
   });
@@ -30,6 +33,9 @@ export const NewEventForm = (props: Props) => {
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submissionError, setSubmissionError] = useState<string | undefined>();
+
+  const startDateWatch = watch("start");
+  const endDateWatch = watch("end");
 
   const isEditMode =
     !!props.eventId &&
@@ -92,6 +98,15 @@ export const NewEventForm = (props: Props) => {
             error={fieldState.error?.message}
           />
         )}
+      />
+
+      <DateRangePicker
+        label={"Event start and finish"}
+        onChange={(start, end) => {
+          setValue("start", start ?? undefined);
+          setValue("end", end ?? undefined);
+        }}
+        value={{ start: startDateWatch, end: endDateWatch }}
       />
 
       {!!submissionError && <ErrorBox error={submissionError} />}

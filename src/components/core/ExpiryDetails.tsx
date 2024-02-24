@@ -6,8 +6,9 @@ import { Timestamp } from "@react-native-firebase/firestore/lib/modular/Timestam
 
 type Props = {
   expiry: Timestamp | undefined;
+  title?: string;
 } & Pick<UseEventItemDataHookRTN<any>, "expired">;
-export const ExpiryDetails = ({ expired, expiry }: Props) => {
+export const ExpiryDetails = ({ expired, expiry, title }: Props) => {
   if (!expiry) return null;
 
   return (
@@ -20,7 +21,7 @@ export const ExpiryDetails = ({ expired, expiry }: Props) => {
         alignItems: "center",
       }}
     >
-      <Text.Subheading>Due date</Text.Subheading>
+      <Text.Subheading>{title ?? "Due date"}</Text.Subheading>
       <Text.Span>
         {formatToDate(expiry.toDate())}
         {expired && " - Ended"}

@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useMessageThread } from "~/hooks/useMessageThread";
 import { Text } from "~/components/core/Text";
 import { Loading } from "~/components/app/Loading";
@@ -7,6 +7,7 @@ import { sHeight } from "~/constants/layout";
 import { colors } from "~/constants/colors";
 import { MessageBubble } from "~/components/app/MessageBubble";
 import { SendMessageForm } from "~/components/forms/SendMessage";
+import { FlashList } from "@shopify/flash-list";
 
 export const MessageThread = (props: { threadId: string }) => {
   const { data, messages, fetchingMessages, fetchingThread } = useMessageThread(
@@ -20,11 +21,12 @@ export const MessageThread = (props: { threadId: string }) => {
   return (
     <>
       <Text.H1>Thread {data?.id}</Text.H1>
-      <FlatList
+      <FlashList
         data={messages}
         style={styles.listContainer}
         contentContainerStyle={styles.listContentContainer}
         keyExtractor={(item) => item.id}
+        estimatedItemSize={100}
         renderItem={({ item: m }) => {
           return (
             <MessageBubble
@@ -42,6 +44,7 @@ export const MessageThread = (props: { threadId: string }) => {
             <SendMessageForm threadId={data.id} />
           </View>
         }
+        ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
         ListFooterComponent={<View style={styles.listFooter} />}
         ListEmptyComponent={
           fetchingMessages ? (
@@ -76,5 +79,8 @@ const styles = StyleSheet.create({
   },
   listFooter: {
     padding: padding["screen-y"],
+  },
+  listSeparator: {
+    padding: padding.sm,
   },
 });
