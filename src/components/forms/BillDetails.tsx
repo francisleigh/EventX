@@ -43,8 +43,6 @@ export const BillPaymentDetailsForm = ({
 
   const submit = useCallback(
     async (formValues: BillSchemaType) => {
-      console.log("form values", formValues);
-
       setSubmissionError(undefined);
       setSubmitting(true);
       try {

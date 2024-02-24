@@ -103,6 +103,9 @@ export const List = ({
               }
             : undefined
         }
+        eventId={eventId}
+        eventItemId={listId}
+        threadId={data.threadId}
       >
         {data.title}{" "}
       </FeatureHeading>

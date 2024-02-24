@@ -77,8 +77,6 @@ export const Bill = ({
 
   if (!data) return <Text.H1>No bill data</Text.H1>;
 
-  console.log("Bill data", data);
-
   return (
     <>
       <Card
@@ -99,6 +97,9 @@ export const Bill = ({
                 }
               : undefined
           }
+          eventId={eventId}
+          eventItemId={billId}
+          threadId={data.threadId}
         >
           {data?.title}
         </FeatureHeading>

@@ -4,6 +4,8 @@ import {
   EventDocument,
   ListItemDocument,
   ListRootDocument,
+  MessageDocument,
+  MessageThreadRootDocument,
   PollOptionDocument,
   PollRootDocument,
   PollVoterDocument,
@@ -36,4 +38,14 @@ export type ClientListDocument = WithID<
   {
     items: WithID<ListItemDocument>[];
   } & ListRootDocument
+>;
+
+export type ClientMessageThreadDocument = WithID<
+  {
+    messages: WithID<
+      { createdAt: Date } & Omit<MessageDocument, "createdAt">
+    >[];
+    createdAt: Date;
+    updatedAt: Date;
+  } & Omit<MessageThreadRootDocument, "updatedAt" | "createdAt">
 >;

@@ -69,3 +69,19 @@ export type ListRootDocument = {
   type: "list";
   expiry: Timestamp;
 } & ListSchemaType;
+
+/**
+ * @description Message thread
+ * */
+export type MessageDocument = {
+  userId: string;
+  createdAt: Timestamp;
+  body: string;
+};
+
+export type MessageThreadRootDocument = {
+  eventId: string;
+  eventItemId?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};

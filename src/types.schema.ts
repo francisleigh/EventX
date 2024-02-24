@@ -17,6 +17,8 @@ export const EventItemSchema = z.object({
   description: z.string().optional(),
 
   expiry: z.date().optional(),
+
+  threadId: z.string().optional(),
 });
 export type EventItemSchemaType = z.infer<typeof EventItemSchema>;
 
@@ -64,3 +66,18 @@ export const ListItemSchema = z.object({
 
 export type ListSchemaType = z.infer<typeof ListSchema>;
 export type ListItemSchemaType = z.infer<typeof ListItemSchema>;
+
+export const MessageThreadSchema = z.object({
+  eventId: z.string(),
+  eventItemId: z.string().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const MessageSchema = z.object({
+  userId: z.string(),
+  createdAt: z.date().optional(),
+  body: z.string(),
+});
+
+export type MessageThreadSchemaType = z.infer<typeof MessageThreadSchema>;
+export type MessageSchemaType = z.infer<typeof MessageSchema>;

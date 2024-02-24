@@ -3,7 +3,10 @@ import { padding, gap } from "~/constants/spacing";
 import { colors } from "~/constants/colors";
 import { borderWidth, borderRadius } from "~/constants/borders";
 import {
+  RefreshControl,
+  RefreshControlProps,
   ScrollView,
+  ScrollViewProps,
   StyleProp,
   View,
   ViewProps,
@@ -14,29 +17,69 @@ import {
   SafeAreaViewProps,
 } from "react-native-safe-area-context";
 
-type ContainerProps = Pick<ViewProps, "children"> & {
-  type?: "modal" | "stack";
-};
-export const PageContainer = ({ children, type = "stack" }: ContainerProps) => {
+type ContainerProps = Pick<ViewProps, "children"> &
+  Partial<Pick<RefreshControlProps, "onRefresh" | "refreshing">> & {
+    type?: "modal" | "stack";
+    containerAs?: "ScrollView" | "View";
+    scrollViewProps?: Partial<ScrollViewProps>;
+  };
+export const PageContainer = ({
+  children,
+  type = "stack",
+  containerAs = "ScrollView",
+  onRefresh,
+  refreshing,
+}: ContainerProps) => {
   let edges: SafeAreaViewProps["edges"] = undefined;
   if (type === "modal") edges = ["bottom", "left", "right"];
+
+  const scrollViewProps: ScrollViewProps = {};
+  if (onRefresh)
+    scrollViewProps.refreshControl = (
+      <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} />
+    );
+
   return (
-    <SafeAreaView style={{ backgroundColor: colors.secondary }} edges={edges}>
-      <ScrollView
-        style={{
-          overflow: "scroll",
-          minHeight: sHeight,
-          backgroundColor: colors.secondary,
-          paddingHorizontal: padding["screen-x"],
-          paddingVertical: padding["screen-y"],
-        }}
-        contentContainerStyle={{
-          gap: gap.default,
-          paddingBottom: sHeight * 0.25,
-        }}
-      >
-        {children}
-      </ScrollView>
+    <SafeAreaView
+      style={{
+        backgroundColor: colors.secondary,
+      }}
+      edges={edges}
+    >
+      {containerAs === "ScrollView" && (
+        <ScrollView
+          style={{
+            overflow: "scroll",
+            minHeight: sHeight,
+            backgroundColor: colors.secondary,
+            paddingHorizontal: padding["screen-x"],
+            paddingVertical: padding["screen-y"],
+          }}
+          contentContainerStyle={{
+            gap: gap.default,
+            paddingBottom: sHeight * 0.25,
+          }}
+          {...scrollViewProps}
+        >
+          {children}
+        </ScrollView>
+      )}
+      {containerAs === "View" && (
+        <View
+          style={{
+            overflow: "scroll",
+            minHeight: sHeight,
+            backgroundColor: colors.secondary,
+            paddingHorizontal: padding["screen-x"],
+            paddingVertical: padding["screen-y"],
+            gap: gap.default,
+            paddingBottom: sHeight * 0.25,
+          }}
+          {...scrollViewProps}
+        >
+          {children}
+        </View>
+      )}
     </SafeAreaView>
   );
 };

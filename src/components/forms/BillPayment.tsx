@@ -43,7 +43,6 @@ export const NewBillPaymentForm = ({
         setPaymentId(undefined);
         router.back();
       } else {
-        console.log("reset form");
         reset();
         setPaymentId(undefined);
       }
@@ -74,7 +73,6 @@ export const NewBillPaymentForm = ({
   }, [handleSubmit, submit, canGoBack]);
 
   const handleSubmitAndAddAnother = useCallback(() => {
-    console.log("handleSubmitAndAddAnother");
     canGoBack.current = false;
     handleSubmit(submit)();
   }, [handleSubmit, submit, canGoBack]);

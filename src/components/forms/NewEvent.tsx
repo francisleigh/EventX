@@ -50,7 +50,6 @@ export const NewEventForm = (props: Props) => {
           router.back();
         } else {
           const newEventId = await createNewEvent(formValues);
-          console.log("New event", newEventId);
           router.replace({ pathname: "/event", params: { id: newEventId } });
         }
       } catch (e) {

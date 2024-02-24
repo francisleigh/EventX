@@ -11,8 +11,6 @@ import { Loading } from "~/components/app/Loading";
 import { Bill } from "~/components/app/Bill";
 import { List } from "~/components/app/List";
 import { Button } from "~/components/core/Button";
-import { temp_userid } from "~/tempuser";
-import { View } from "react-native";
 import {
   FeatureHeading,
   FeatureHeadingProps,
@@ -50,6 +48,8 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           pathname: "/event-form",
           params: { eventId },
         }}
+        threadId={data.threadId}
+        eventId={eventId}
       >
         {data.title}
       </FeatureHeading>

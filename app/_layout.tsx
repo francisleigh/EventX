@@ -8,6 +8,13 @@ export default function Layout() {
         <Stack.Screen name="index" options={{ header: () => null }} />
 
         <Stack.Screen
+          name="message-thread"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
+        <Stack.Screen
           name="event-form"
           options={{
             header: () => null,

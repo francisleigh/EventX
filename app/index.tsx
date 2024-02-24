@@ -15,15 +15,21 @@ export default function Page() {
   const [fetchingEvents, setFetchingEvents] = useState<boolean>(true);
   const [events, setEvents] = useState<ClientEventDocument[]>([]);
 
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+
   useEffect(() => {
+    setFetchingEvents(true);
     getEvents(temp_userid)
       .then(setEvents)
       .finally(() => setFetchingEvents(false));
-  }, [setEvents]);
+  }, [setEvents, setFetchingEvents, refreshKey]);
 
   return (
     <>
-      <PageContainer>
+      <PageContainer
+        onRefresh={() => setRefreshKey((k) => ++k)}
+        refreshing={fetchingEvents}
+      >
         <FeatureHeading view={"full"}>Hi Ellen!</FeatureHeading>
 
         <PageContainer.InnerContent>

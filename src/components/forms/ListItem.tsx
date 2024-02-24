@@ -37,7 +37,6 @@ export const NewListItemForm = ({
         setItemId(undefined);
         router.back();
       } else {
-        console.log("reset form");
         reset();
         setItemId(undefined);
       }
@@ -68,7 +67,6 @@ export const NewListItemForm = ({
   }, [handleSubmit, submit, canGoBack]);
 
   const handleSubmitAndAddAnother = useCallback(() => {
-    console.log("handleSubmitAndAddAnother");
     canGoBack.current = false;
     handleSubmit(submit)();
   }, [handleSubmit, submit, canGoBack]);

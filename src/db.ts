@@ -3,6 +3,8 @@ import {
   EventItemSchemaType,
   EventSchemaType,
   ListItemSchemaType,
+  MessageSchemaType,
+  MessageThreadSchemaType,
   PollOptionSchemaType,
 } from "~/types.schema";
 import { firestore } from "~/backend";
@@ -15,8 +17,14 @@ import {
   getDoc,
   getDocs,
   where,
+  orderBy,
 } from "@firebase/firestore";
-import { ClientEventDocument, WithID } from "~/types.client";
+import { updateProfile, getAuth } from "@firebase/auth";
+import {
+  ClientEventDocument,
+  ClientMessageThreadDocument,
+  WithID,
+} from "~/types.client";
 import {
   BillPaymentDocument,
   BillRootDocument,
@@ -24,6 +32,7 @@ import {
   EventItemBase,
   ListItemDocument,
   ListRootDocument,
+  MessageDocument,
   PollOptionDocument,
   PollRootDocument,
   PollVoterDocument,
@@ -41,8 +50,6 @@ export const updateExistingEvent = async (
   eventId: ClientEventDocument["id"],
   data: Partial<EventItemSchemaType>,
 ): Promise<void> => {
-  console.log("update", eventId);
-  console.log("update", data);
   const events = collection(firestore, "events");
   const ref = doc(events, eventId);
 
@@ -52,7 +59,6 @@ export const updateExistingEvent = async (
 export const getEvents = async (userId: string) => {
   const q = query(
     collection(firestore, "events"),
-
     where("owner", "==", userId),
   );
 
@@ -108,8 +114,6 @@ export const updateExistingEventItem = async (
   eventItemId: string,
   data: Partial<EventItemSchemaType>,
 ): Promise<void> => {
-  console.log("update event item", eventItemId);
-  console.log("update event item", data);
   const events = collection(firestore, "events", eventId, "items");
   const ref = doc(events, eventItemId);
 
@@ -359,4 +363,79 @@ export const updateListItem = async (
   }
 
   return listItemDocRef.id;
+};
+
+export const getMessageThreadDocument = async (threadId: string) => {
+  const ref = collection(firestore, "message-threads");
+  const threadItemDocRef = doc(ref, threadId);
+  return await getDoc(threadItemDocRef);
+};
+
+export const createMessageThreadDocument = async (
+  eventId: string,
+  eventItemId?: string,
+) => {
+  const ref = collection(firestore, "message-threads");
+
+  const createdAt = new Date();
+  const data = {
+    createdAt,
+    updatedAt: createdAt,
+    eventId,
+  } as MessageThreadSchemaType;
+  if (eventItemId) data.eventItemId = eventItemId;
+
+  const newMessageThread = await addDoc(ref, data);
+
+  return newMessageThread.id;
+};
+
+export const updateMessageThreadDocument = async (
+  threadId: string,
+  data: Partial<MessageThreadSchemaType>,
+) => {
+  const ref = collection(firestore, "message-threads");
+  const docRef = doc(ref, threadId);
+  const docItem = await getDoc(docRef);
+
+  if (docItem.exists()) {
+    return await updateDoc(docRef, data);
+  }
+
+  return docRef.id;
+};
+
+export const getMessageThreadMessages = async (threadId: string) => {
+  const ref = collection(firestore, "message-threads", threadId, "messages");
+  const q = query(ref, orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => {
+    const messageData = doc.data() as unknown as MessageDocument;
+    return {
+      ...messageData,
+      id: doc.id,
+      createdAt: messageData.createdAt.toDate(),
+    };
+  }) as ClientMessageThreadDocument["messages"];
+};
+
+export const sendMessageToThread = async (
+  threadId: string,
+  message: MessageSchemaType,
+) => {
+  const ref = collection(firestore, "message-threads", threadId, "messages");
+
+  const newMessageDocRef = await addDoc(ref, message);
+
+  return newMessageDocRef.id;
+};
+
+// Profile updates
+export const updateProfilePic = async (photoURL: string) => {
+  const auth = getAuth();
+
+  if (auth.currentUser) {
+    await updateProfile(auth.currentUser, { photoURL });
+  }
 };

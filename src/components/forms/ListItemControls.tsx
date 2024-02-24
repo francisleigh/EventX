@@ -80,9 +80,6 @@ export const ListItemControlsForm = ({
     return <Loading />;
   }
 
-  console.log("EXPIRED", expired);
-  console.log("listItemData", listItemData);
-
   if (expired || !listItemData) {
     router.back();
 

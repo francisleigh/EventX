@@ -197,6 +197,9 @@ export const Poll = ({
               }
             : undefined
         }
+        eventId={eventId}
+        eventItemId={pollId}
+        threadId={data.threadId}
       >
         {data.title}
       </FeatureHeading>

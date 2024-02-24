@@ -22,8 +22,6 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
 
       const eventItems = await getEventItems(eventId);
 
-      console.log("EVENT ITEMS", eventItems);
-
       const eventData: RTN["data"] = {
         id: eventId,
         ...event,

@@ -45,9 +45,6 @@ export const NewEventItemForm = ({
 
   const submit = useCallback(
     async (formValues: EventItemSchemaType) => {
-      console.log("eventId", eventId);
-      console.log("form values", formValues);
-
       setSubmissionError(undefined);
       setSubmitting(true);
       try {
@@ -63,7 +60,6 @@ export const NewEventItemForm = ({
             eventId,
             formValues,
           );
-          console.log("New event item", type, newEventItemId);
           router.replace({
             pathname: `/${type}`,
             params: { id: newEventItemId, eventId },
