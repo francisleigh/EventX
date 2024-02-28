@@ -105,6 +105,7 @@ export const List = ({
         }
         eventId={eventId}
         eventItemId={listId}
+        eventItemType={"list"}
         threadId={data.threadId}
       >
         {data.title}{" "}

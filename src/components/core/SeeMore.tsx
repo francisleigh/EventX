@@ -21,6 +21,7 @@ export const SeeMore = ({ linkProps, view }: Props) => {
             alignItems: "center",
             width: "100%",
             paddingVertical: padding.sm,
+            flexGrow: 1,
           }}
         >
           <Text.Span>See more</Text.Span>

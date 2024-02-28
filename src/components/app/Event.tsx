@@ -18,6 +18,7 @@ import {
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { EventItemDescription } from "~/components/core/EventItemDescription";
+import { View } from "react-native";
 
 type EventProps = {
   eventId: string;
@@ -123,8 +124,6 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
           >
             <Button icon={<Text.Button>+</Text.Button>}>New item</Button>
           </Link>
-
-          <ExpiryDetails expiry={data?.end} expired={expired} />
         </>
       )}
 

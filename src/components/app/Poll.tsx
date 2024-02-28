@@ -1,6 +1,6 @@
 import { Card } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
-import { gap } from "~/constants/spacing";
+import { gap, padding } from "~/constants/spacing";
 import { Dot } from "~/components/core/Dot";
 import {
   StyleProp,
@@ -27,6 +27,8 @@ import {
 import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { EventItemDescription } from "~/components/core/EventItemDescription";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { EventItemTypeHeader } from "~/components/core/EventItemTypeHeader";
 
 const dotStylesByVote = StyleSheet.create({
   top: {
@@ -199,6 +201,7 @@ export const Poll = ({
         }
         eventId={eventId}
         eventItemId={pollId}
+        eventItemType={"poll"}
         threadId={data.threadId}
       >
         {data.title}

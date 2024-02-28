@@ -99,6 +99,7 @@ export const Bill = ({
           }
           eventId={eventId}
           eventItemId={billId}
+          eventItemType={"bill"}
           threadId={data.threadId}
         >
           {data?.title}

@@ -17,6 +17,8 @@ import {
   updateExistingEventItem,
 } from "~/db";
 import { Loading } from "~/components/app/Loading";
+import { EventItemTypeHeader } from "~/components/core/EventItemTypeHeader";
+import { EventItemSchemaType } from "~/types.schema";
 
 type HREF = LinkProps<any>["href"];
 type EventItemGenericShape = UseEventItemDataHookRTN<
@@ -28,6 +30,7 @@ export type FeatureHeadingProps = {
   editLinkHref?: HREF;
   eventId?: EventItemGenericShape["data"]["id"];
   eventItemId?: EventItemGenericShape["data"]["id"];
+  eventItemType?: EventItemSchemaType["type"];
 } & Partial<
   Pick<EventItemGenericShape, "expired" | "expiresSoon" | "parentExpired">
 > &
@@ -42,6 +45,7 @@ export const FeatureHeading = ({
   parentExpired,
   eventId,
   eventItemId,
+  eventItemType,
   threadId,
 }: FeatureHeadingProps) => {
   const router = useRouter();
@@ -81,91 +85,98 @@ export const FeatureHeading = ({
   }, []);
 
   return (
-    <View style={styles.container}>
-      {view === "full" && (
-        <View style={styles.headerContainer}>
-          {router.canGoBack() && (
-            <TouchableOpacity style={styles.headerButton} onPress={router.back}>
-              <AntDesign name="arrowleft" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          )}
+    <View>
+      {view !== "full" && <EventItemTypeHeader type={eventItemType} />}
 
-          <View style={styles.headerIconContainer}>
+      <View style={styles.container}>
+        {view === "full" && (
+          <View style={styles.headerContainer}>
             {router.canGoBack() && (
-              <>
-                {parentExpired || expired ? (
-                  <MaterialCommunityIcons
-                    name="coffin"
-                    size={24}
-                    color={colors.primary}
-                  />
-                ) : expiresSoon ? (
-                  <MaterialCommunityIcons
-                    name="clock-alert"
-                    size={24}
-                    color={colors.detail}
-                  />
-                ) : null}
-              </>
-            )}
-
-            {!!threadId && !!eventId ? ( // @ts-ignore
-              <Link
-                href={{
-                  pathname: "/message-thread",
-                  params: {
-                    id: threadId,
-                    eventId: eventId,
-                    eventItemId: eventItemId ?? "",
-                  },
-                }}
-                asChild
-              >
-                <TouchableOpacity style={styles.headerButton}>
-                  <MaterialCommunityIcons
-                    name="message"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </Link>
-            ) : !!eventId ? (
-              // @ts-ignore
-
               <TouchableOpacity
                 style={styles.headerButton}
-                onPress={handleCreateNewThread}
+                onPress={router.back}
               >
-                {creatingThread ? (
-                  <Loading />
-                ) : (
-                  <MaterialCommunityIcons
-                    name="message-plus"
-                    size={24}
-                    color={colors.primary}
-                  />
-                )}
+                <AntDesign name="arrowleft" size={24} color={colors.primary} />
               </TouchableOpacity>
-            ) : null}
-
-            {!!editLinkHref && view === "full" && (
-              // @ts-ignore
-              <Link href={editLinkHref} asChild>
-                <TouchableOpacity style={styles.headerButton}>
-                  <MaterialCommunityIcons
-                    name="pencil"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </Link>
             )}
-          </View>
-        </View>
-      )}
 
-      <View style={styles.titleContainer}>
-        <TitleBasedOnView>{children}</TitleBasedOnView>
+            <View style={styles.headerIconContainer}>
+              {router.canGoBack() && (
+                <>
+                  {parentExpired || expired ? (
+                    <MaterialCommunityIcons
+                      name="coffin"
+                      size={24}
+                      color={colors.detail}
+                    />
+                  ) : expiresSoon ? (
+                    <MaterialCommunityIcons
+                      name="clock-alert"
+                      size={24}
+                      color={colors.detail}
+                    />
+                  ) : null}
+                </>
+              )}
+
+              {!!threadId && !!eventId ? ( // @ts-ignore
+                <Link
+                  href={{
+                    pathname: "/message-thread",
+                    params: {
+                      id: threadId,
+                      eventId: eventId,
+                      eventItemId: eventItemId ?? "",
+                    },
+                  }}
+                  asChild
+                >
+                  <TouchableOpacity style={styles.headerButton}>
+                    <MaterialCommunityIcons
+                      name="message"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  </TouchableOpacity>
+                </Link>
+              ) : !!eventId ? (
+                // @ts-ignore
+
+                <TouchableOpacity
+                  style={styles.headerButton}
+                  onPress={handleCreateNewThread}
+                >
+                  {creatingThread ? (
+                    <Loading />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="message-plus"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  )}
+                </TouchableOpacity>
+              ) : null}
+
+              {!!editLinkHref && view === "full" && (
+                // @ts-ignore
+                <Link href={editLinkHref} asChild>
+                  <TouchableOpacity style={styles.headerButton}>
+                    <MaterialCommunityIcons
+                      name="pencil"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  </TouchableOpacity>
+                </Link>
+              )}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.titleContainer}>
+          <TitleBasedOnView>{children}</TitleBasedOnView>
+        </View>
       </View>
     </View>
   );
