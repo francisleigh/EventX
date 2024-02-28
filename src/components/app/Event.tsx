@@ -19,6 +19,7 @@ import { SeeMore } from "~/components/core/SeeMore";
 import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { EventItemDescription } from "~/components/core/EventItemDescription";
 import { View } from "react-native";
+import { FAQAccordionItem } from "~/components/core/FAQAccordionItem";
 
 type EventProps = {
   eventId: string;
@@ -71,12 +72,7 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
           <Text.H1>FAQs</Text.H1>
           {data.faqs.map((faq) => {
-            return (
-              <Card key={faq.id} shadow spacingVariant={"sm"}>
-                <Text.Subheading>{faq.title}</Text.Subheading>
-                <Text.Span>{faq.body}</Text.Span>
-              </Card>
-            );
+            return <FAQAccordionItem key={faq.id} faq={faq} />;
           })}
           <Link
             href={{
