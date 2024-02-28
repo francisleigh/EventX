@@ -9,6 +9,7 @@ import {
   PollOptionSchemaType,
   PollSchemaType,
   PollVoterSchemaType,
+  FAQSchemaType,
 } from "~/types.schema";
 
 type Timestamp = FirebaseFirestoreTypes.Timestamp;
@@ -85,3 +86,5 @@ export type MessageThreadRootDocument = {
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
+
+export type FAQItemDocument = {} & FAQSchemaType;

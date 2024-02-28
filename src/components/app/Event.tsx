@@ -69,6 +69,27 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
             />
           )}
 
+          <Text.H1>FAQs</Text.H1>
+          {data.faqs.map((faq) => {
+            return (
+              <Card key={faq.id} shadow spacingVariant={"sm"}>
+                <Text.Subheading>{faq.title}</Text.Subheading>
+                <Text.Span>{faq.body}</Text.Span>
+              </Card>
+            );
+          })}
+          <Link
+            href={{
+              pathname: "/event-faq-form",
+              params: {
+                eventId,
+              },
+            }}
+            asChild
+          >
+            <Button icon={<Text.Button>+</Text.Button>}>New FAQ</Button>
+          </Link>
+
           {!noItems && <Text.H1>Items</Text.H1>}
 
           {data.polls.map((poll) => (

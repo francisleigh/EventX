@@ -9,12 +9,14 @@ import {
   PollOptionDocument,
   PollRootDocument,
   PollVoterDocument,
+  FAQItemDocument,
 } from "~/types.firestore";
 
 export type WithID<T extends {}> = T & { id: string };
 
 export type ClientEventDocument = WithID<
   {
+    faqs: WithID<FAQItemDocument>[];
     polls: WithID<PollRootDocument>[];
     bills: WithID<BillRootDocument>[];
     lists: WithID<ListRootDocument>[];
@@ -49,3 +51,5 @@ export type ClientMessageThreadDocument = WithID<
     updatedAt: Date;
   } & Omit<MessageThreadRootDocument, "updatedAt" | "createdAt">
 >;
+
+export type ClientFAQDocument = WithID<FAQItemDocument>;

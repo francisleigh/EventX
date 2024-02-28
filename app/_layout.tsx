@@ -63,6 +63,13 @@ export default function Layout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="event-faq-form"
+          options={{
+            header: () => null,
+            presentation: "modal",
+          }}
+        />
 
         <Stack.Screen
           name="event"

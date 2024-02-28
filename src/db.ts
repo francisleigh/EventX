@@ -22,6 +22,7 @@ import {
 import { updateProfile, getAuth } from "@firebase/auth";
 import {
   ClientEventDocument,
+  ClientFAQDocument,
   ClientMessageThreadDocument,
   WithID,
 } from "~/types.client";
@@ -30,6 +31,7 @@ import {
   BillRootDocument,
   EventDocument,
   EventItemBase,
+  FAQItemDocument,
   ListItemDocument,
   ListRootDocument,
   MessageDocument,
@@ -91,6 +93,22 @@ export const getEventItems = async (
 
   return docs.docs.map((d) => {
     const data = d.data() as OneOfEventItemType;
+    return {
+      ...data,
+      id: d.id,
+    };
+  });
+};
+export const getEventFAQs = async (
+  eventId: ClientEventDocument["id"],
+): Promise<WithID<ClientFAQDocument>[]> => {
+  const ref = collection(firestore, "events", eventId, "faqs");
+  const docs = await getDocs(ref);
+
+  if (docs.empty) return [];
+
+  return docs.docs.map((d) => {
+    const data = d.data() as FAQItemDocument;
     return {
       ...data,
       id: d.id,
@@ -438,4 +456,30 @@ export const updateProfilePic = async (photoURL: string) => {
   if (auth.currentUser) {
     await updateProfile(auth.currentUser, { photoURL });
   }
+};
+
+export const getFAQItem = async (eventId: string, faqId: string) => {
+  const docRef = doc(collection(firestore, "events", eventId, "faqs"), faqId);
+  const getDocReturn = await getDoc(docRef);
+
+  return { ...(getDocReturn.data() as FAQItemDocument), id: getDocReturn.id };
+};
+
+export const addFAQToEvent = async (eventId: string, data: FAQSchemaType) => {
+  const ref = collection(firestore, "events", eventId, "faqs");
+  const docRef = await addDoc(ref, data);
+
+  return docRef.id;
+};
+
+export const updateFAQItem = async (
+  eventId: string,
+  faqId: string,
+  data: Partial<FAQSchemaType>,
+) => {
+  const ref = collection(firestore, "events", eventId, "faqs");
+  const docToUpdateRef = doc(ref, faqId);
+  await updateDoc(docToUpdateRef, data);
+
+  return docToUpdateRef.id;
 };

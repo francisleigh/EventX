@@ -1,6 +1,6 @@
 import { ClientEventDocument } from "~/types.client";
 import { useEffect, useMemo, useState } from "react";
-import { getEvent, getEventItems } from "~/db";
+import { getEvent, getEventFAQs, getEventItems } from "~/db";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
 import { expiresSoon, hasExpired } from "~/util";
 import { temp_userid } from "~/tempuser";
@@ -21,10 +21,12 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
       if (!event) return;
 
       const eventItems = await getEventItems(eventId);
+      const faqs = await getEventFAQs(eventId);
 
       const eventData: RTN["data"] = {
         id: eventId,
         ...event,
+        faqs,
         polls: [],
         bills: [],
         lists: [],

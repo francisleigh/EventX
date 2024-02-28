@@ -36,6 +36,12 @@ export type PollSchemaType = z.infer<typeof PollSchema>;
 export type PollOptionSchemaType = z.infer<typeof PollOptionSchema>;
 export type PollVoterSchemaType = z.infer<typeof PollVoterSchema>;
 
+export const FAQSchema = z.object({
+  title: z.string(),
+  body: z.string(),
+});
+export const FAQSchemaType = z.infer<typeof FAQSchema>;
+
 export const BillPaymentDetailsSchema = z.object({
   totalOwed: z.number().transform(Number),
   currency: z.string().optional(),
