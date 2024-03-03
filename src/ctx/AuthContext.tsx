@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "~/backend";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { User } from "@firebase/auth";
 
 type AuthState = {
+  user: User | null;
   initialisingAuth: boolean;
   authenticated: boolean;
   authBusy: boolean;
-  signIn: (phoneNumber: string) => Promise<void>;
+  signIn: (
+    phoneNumber: string,
+  ) => Promise<FirebaseAuthTypes.ConfirmationResult | undefined>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = React.createContext<AuthState>({
+  user: null,
   authenticated: false,
   initialisingAuth: true,
   authBusy: false,
-  signIn: async () => {},
+  signIn: async () => undefined,
   signOut: async () => {},
 });
 
@@ -26,12 +31,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const [initialisingAuth, setInitialisingAuth] = useState<boolean>(true);
   const [authBusy, setAuthBusy] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     async function init() {
       return new Promise((res) => {
         setInitialisingAuth(false);
-        setAuthenticated(!!auth.currentUser);
+        setAuthenticated(!!auth().currentUser);
+        setUser(auth().currentUser);
         res(true);
       });
     }
@@ -41,25 +48,31 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const signIn: AuthState["signIn"] = async (phoneNumber) => {
     setAuthBusy(true);
-    return new Promise((res) => {
-      setAuthenticated(true);
-      setAuthBusy(false);
-      res();
-    });
+    try {
+      console.log("sign in", phoneNumber);
+      return await auth().signInWithPhoneNumber(phoneNumber);
+    } catch (e) {
+      console.log("signIn error", e);
+    }
   };
 
   const signOut: AuthState["signOut"] = async () => {
     setAuthBusy(true);
+    await auth().signOut();
     return new Promise((res) => {
       setAuthenticated(false);
+      setUser(null);
       setAuthBusy(false);
       res();
     });
   };
 
+  console.log("USER", user);
+
   return (
     <AuthContext.Provider
       value={{
+        user,
         initialisingAuth,
         authBusy,
         signIn,

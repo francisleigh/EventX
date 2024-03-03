@@ -87,3 +87,15 @@ export const MessageSchema = z.object({
 
 export type MessageThreadSchemaType = z.infer<typeof MessageThreadSchema>;
 export type MessageSchemaType = z.infer<typeof MessageSchema>;
+
+export const SignInSchema = z.object({
+  phoneNumber: z.string(),
+});
+export type SignInSchemaType = z.infer<typeof SignInSchema>;
+
+export const PhoneVerificationSchema = z.object({
+  verificationCode: z.string(),
+});
+export type PhoneVerificationSchemaType = z.infer<
+  typeof PhoneVerificationSchema
+>;

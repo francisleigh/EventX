@@ -6,8 +6,6 @@ import { useSession } from "~/ctx/AuthContext";
 export default function AuthLayout() {
   const session = useSession();
 
-  console.log("(app)/(root)/_layout session", session.authenticated);
-
   if (session.initialisingAuth)
     return (
       <View

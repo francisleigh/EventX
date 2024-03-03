@@ -12,7 +12,28 @@
           "package_name": "com.francisleigh.eventx"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "410380259796-k7uu06hcjnajsnij5jcn7i5h08lfd240.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.francisleigh.eventx",
+            "certificate_hash": "533abf29611bcb10a415f9c31c7c350ee48b49de"
+          }
+        },
+        {
+          "client_id": "410380259796-se5vepofvv5pd0dsip11pt10vkrobqho.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.francisleigh.eventx",
+            "certificate_hash": "bfd1e197a8f65c05b42c74ff2dffc8e843f5ad07"
+          }
+        },
+        {
+          "client_id": "410380259796-5gsstb851bkqke99hlqqt7frp0sp59sg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBeU3sp6f_IDVZZYP8HXAl-6p0lcUGfsjI"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410380259796-5gsstb851bkqke99hlqqt7frp0sp59sg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "410380259796-07katamjpf7m40aq49pb1q2f309b3lhp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.francisleigh.eventx"
+              }
+            }
+          ]
         }
       }
     }
