@@ -10,8 +10,11 @@ import { getEvents } from "~/db";
 import { temp_userid } from "~/tempuser";
 import { FeatureHeading } from "~/components/core/FeatureHeading";
 import { ClientEventDocument } from "~/types.client";
+import { ButtonProps } from "react-native";
+import { useSession } from "~/ctx/AuthContext";
 
 export default function Page() {
+  const session = useSession();
   const [fetchingEvents, setFetchingEvents] = useState<boolean>(true);
   const [events, setEvents] = useState<ClientEventDocument[]>([]);
 
@@ -23,6 +26,10 @@ export default function Page() {
       .then(setEvents)
       .finally(() => setFetchingEvents(false));
   }, [setEvents, setFetchingEvents, refreshKey]);
+
+  const handleSignOut: ButtonProps["onPress"] = () => {
+    void session.signOut();
+  };
 
   return (
     <>
@@ -58,6 +65,10 @@ export default function Page() {
         >
           <Button icon={<Text.Button>+</Text.Button>}>New event</Button>
         </Link>
+
+        <Button busy={session.authBusy} onPress={handleSignOut}>
+          Sign out
+        </Button>
       </PageContainer>
     </>
   );

@@ -1,8 +1,8 @@
+import { Platform } from "react-native";
 import { initializeApp } from "firebase/app";
 
 // Optionally import the services that you want to use
 import { getFirestore } from "firebase/firestore";
-import { Platform } from "react-native";
 import { getAuth } from "firebase/auth";
 
 const appId = Platform.select({
