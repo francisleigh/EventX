@@ -3,7 +3,7 @@ import { ClientMessageThreadDocument } from "~/types.client";
 import { Text } from "~/components/core/Text";
 import { Card } from "~/components/core/Layout";
 import { StyleSheet, View } from "react-native";
-import { temp_userid } from "~/tempuser";
+import { useSession } from "~/ctx/AuthContext";
 
 type Props = {
   threadData: Omit<ClientMessageThreadDocument, "messages">;
@@ -16,7 +16,8 @@ export const MessageBubble = ({
   threadData,
   onInteraction,
 }: Props) => {
-  const userIsSender = message.userId === temp_userid;
+  const session = useSession();
+  const userIsSender = message.userId === session.userId;
   return (
     <View style={styles.bubbleContainer}>
       <Card

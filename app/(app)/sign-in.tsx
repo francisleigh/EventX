@@ -1,4 +1,4 @@
-import { PageContainer } from "~/components/core/Layout";
+import { Card, PageContainer } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { useSession } from "~/ctx/AuthContext";
 import { useRouter } from "expo-router";
@@ -11,31 +11,29 @@ export default function SignInPage() {
   const session = useSession();
   const router = useRouter();
 
-  const [confirmation, setConfirmation] =
+  const [confirmHandler, setConfirmHandler] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
 
   const handleSignIn = async (formValues: SignInSchemaType) => {
-    const confirmationResult = await session.signIn(formValues.phoneNumber);
-    // console.log(
-    //   "confirmationResult",
-    //   JSON.stringify(confirmationResult, null, 2),
-    // );
-    if (confirmationResult) setConfirmation(confirmationResult);
+    await session.signIn(formValues.phoneNumber);
   };
-  const handleVerifyCode = async (formValues: PhoneVerificationSchemaType) => {
-    if (!confirmation) throw new Error("No confirmation controller present.");
 
-    console.log("confirm", formValues);
-    const _conf = await confirmation?.confirm(formValues.verificationCode);
-    console.log("conf", _conf);
+  const handleVerifyCode = async (formValues: PhoneVerificationSchemaType) => {
+    await session.verifyNumber(formValues.verificationCode);
 
     router.replace("/");
   };
 
   return (
     <PageContainer>
-      <Text.H1>Sign In Page!</Text.H1>
-      {confirmation ? (
+      <Text.H1>Sign in</Text.H1>
+      <Card>
+        <Text.Span>
+          Access your account via the inputs below. If you don't have an
+          account, we will create one for you. Simple!
+        </Text.Span>
+      </Card>
+      {confirmHandler ? (
         <PhoneVerificationForm onSubmit={handleVerifyCode} />
       ) : (
         <SignInForm onSubmit={handleSignIn} />

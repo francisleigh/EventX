@@ -7,10 +7,10 @@ import {
   voteForPollOption,
 } from "~/db";
 import { PollRootDocument } from "~/types.firestore";
-import { temp_userid } from "~/tempuser";
 import { expiresSoon, hasExpired } from "~/util";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
 import { useEventData } from "~/hooks/useEventData";
+import { useSession } from "~/ctx/AuthContext";
 
 type UsePollDataRTN = UseEventItemDataHookRTN<ClientPollDocument> & {
   getVoteCountForOption: (optionId: string) => number;
@@ -121,6 +121,7 @@ export const usePollMutations = ({
   eventId: string;
   pollId: string;
 }): UsePollMutationsRTN => {
+  const session = useSession();
   const [mutating, setMutating] =
     useState<UsePollMutationsRTN["mutating"]>(false);
   const [optionBeingMutated, setOptionBeingMutated] =
@@ -137,7 +138,7 @@ export const usePollMutations = ({
           eventId,
           pollId,
           optionId,
-          temp_userid, // TODO: derive this from auth state
+          session.userId!,
         );
       } catch (e) {
         console.log("usePollMutations voteForOption error", e);

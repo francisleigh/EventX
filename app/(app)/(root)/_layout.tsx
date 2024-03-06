@@ -22,6 +22,8 @@ export default function AuthLayout() {
 
   if (!session.authenticated) return <Redirect href={"/sign-in"} />;
 
+  if (!session.user?.displayName) return <Redirect href={"/edit-profile"} />;
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ header: () => null }} />

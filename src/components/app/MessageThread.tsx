@@ -8,8 +8,10 @@ import { colors } from "~/constants/colors";
 import { MessageBubble } from "~/components/app/MessageBubble";
 import { SendMessageForm } from "~/components/forms/SendMessage";
 import { FlashList } from "@shopify/flash-list";
+import { useSession } from "~/ctx/AuthContext";
 
 export const MessageThread = (props: { threadId: string }) => {
+  const session = useSession();
   const { data, messages, fetchingMessages, fetchingThread } = useMessageThread(
     { threadId: props.threadId },
   );
@@ -41,7 +43,7 @@ export const MessageThread = (props: { threadId: string }) => {
         stickyHeaderIndices={[0]}
         ListHeaderComponent={
           <View style={styles.composeContainer}>
-            <SendMessageForm threadId={data.id} />
+            <SendMessageForm threadId={data.id} userId={session.userId!} />
           </View>
         }
         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}

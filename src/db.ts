@@ -6,6 +6,7 @@ import {
   MessageSchemaType,
   MessageThreadSchemaType,
   PollOptionSchemaType,
+  UserProfileSchemaType,
 } from "~/types.schema";
 import { firestore } from "~/backend";
 import {
@@ -19,7 +20,7 @@ import {
   where,
   orderBy,
 } from "@firebase/firestore";
-import { updateProfile, getAuth } from "@firebase/auth";
+import { updateProfile, getAuth, User } from "@firebase/auth";
 import {
   ClientEventDocument,
   ClientFAQDocument,
@@ -455,6 +456,14 @@ export const updateProfilePic = async (photoURL: string) => {
 
   if (auth.currentUser) {
     await updateProfile(auth.currentUser, { photoURL });
+  }
+};
+
+export const updateUserProfile = async (data: UserProfileSchemaType) => {
+  const auth = getAuth();
+
+  if (auth.currentUser) {
+    await updateProfile(auth.currentUser, { ...data });
   }
 };
 

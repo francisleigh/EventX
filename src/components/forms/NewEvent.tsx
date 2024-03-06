@@ -11,18 +11,18 @@ import {
 import { createNewEvent, updateExistingEvent } from "~/db";
 import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
-import { temp_userid } from "~/tempuser";
 import { removeUndefinedFields } from "~/util";
 
 type Props = {
   eventId?: string;
   defaultValues?: EventSchemaType;
+  userId: string;
 };
 
 export const NewEventForm = (props: Props) => {
   const { control, handleSubmit, watch, setValue } = useForm<EventSchemaType>({
     defaultValues: {
-      owner: temp_userid,
+      owner: props.userId,
       ...(props.defaultValues ?? {}),
       start: props.defaultValues?.start,
       end: props.defaultValues?.end,

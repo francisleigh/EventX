@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getEvent, getEventFAQs, getEventItems } from "~/db";
 import { UseEventItemDataHookRTN } from "~/types.hooks";
 import { expiresSoon, hasExpired } from "~/util";
-import { temp_userid } from "~/tempuser";
+import { useSession } from "~/ctx/AuthContext";
 
 type RTN = Omit<
   UseEventItemDataHookRTN<ClientEventDocument>,
@@ -11,6 +11,7 @@ type RTN = Omit<
 > & {};
 
 export const useEventData = ({ eventId }: { eventId: string }) => {
+  const session = useSession();
   const [fetching, setFetching] = useState<RTN["fetching"]>(true);
   const [data, setData] = useState<RTN["data"]>();
 
@@ -69,7 +70,7 @@ export const useEventData = ({ eventId }: { eventId: string }) => {
     return expiresSoon(data.end.toDate());
   }, [data, expired]);
 
-  const canEdit = useMemo(() => data?.owner === temp_userid, [data]);
+  const canEdit = useMemo(() => data?.owner === session.userId, [data]);
 
   return {
     fetching,

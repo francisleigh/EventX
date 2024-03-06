@@ -7,7 +7,6 @@ import { Event } from "~/components/app/Event";
 import { Loading } from "~/components/app/Loading";
 import { Link } from "expo-router";
 import { getEvents } from "~/db";
-import { temp_userid } from "~/tempuser";
 import { FeatureHeading } from "~/components/core/FeatureHeading";
 import { ClientEventDocument } from "~/types.client";
 import { ButtonProps } from "react-native";
@@ -22,7 +21,7 @@ export default function Page() {
 
   useEffect(() => {
     setFetchingEvents(true);
-    getEvents(temp_userid)
+    getEvents(session.userId!)
       .then(setEvents)
       .finally(() => setFetchingEvents(false));
   }, [setEvents, setFetchingEvents, refreshKey]);
@@ -37,7 +36,9 @@ export default function Page() {
         onRefresh={() => setRefreshKey((k) => ++k)}
         refreshing={fetchingEvents}
       >
-        <FeatureHeading view={"full"}>Hi Ellen!</FeatureHeading>
+        <FeatureHeading view={"full"}>
+          Hi {session.user?.displayName}!
+        </FeatureHeading>
 
         <PageContainer.InnerContent>
           {fetchingEvents ? (

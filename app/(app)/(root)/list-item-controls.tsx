@@ -3,8 +3,10 @@ import { Text } from "~/components/core/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ListItemControlsForm } from "~/components/forms/ListItemControls";
 import { useFocusReload } from "~/hooks/useFocusReload";
+import { useSession } from "~/ctx/AuthContext";
 
 export default function ListItemControlsPage() {
+  const session = useSession();
   const router = useRouter();
   const params = useLocalSearchParams();
   const { reloadKey, invalidate } = useFocusReload();
@@ -23,6 +25,7 @@ export default function ListItemControlsPage() {
         listId={params.listId as string}
         listItemId={params.id as string}
         onRefetchData={invalidate}
+        userId={session.userId!}
       />
     </PageContainer>
   );

@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { gap } from "~/constants/spacing";
 import { useListData } from "~/hooks/useListData";
-import { temp_userid } from "~/tempuser";
 import { ListItemDocument } from "~/types.firestore";
 import { Loading } from "~/components/app/Loading";
 import { Text } from "~/components/core/Text";
@@ -16,11 +15,13 @@ export const ListItemControlsForm = ({
   listId,
   listItemId,
   onRefetchData,
+  userId,
 }: {
   eventId: string;
   listId: string;
   listItemId: string;
   onRefetchData?: () => any;
+  userId: string;
 }) => {
   const router = useRouter();
   const { expired, data, fetching } = useListData({ eventId, listId });
@@ -30,7 +31,7 @@ export const ListItemControlsForm = ({
   const [submissionError, setSubmissionError] = useState<string | undefined>();
 
   const listItemData = data?.items?.find((item) => item.id === listItemId);
-  const userIsAssignee = listItemData?.userId === temp_userid;
+  const userIsAssignee = listItemData?.userId === userId;
 
   const handleAssign = useCallback(
     async (assign: boolean) => {
@@ -40,7 +41,7 @@ export const ListItemControlsForm = ({
           eventId,
           listId,
           listItemId,
-          assign ? temp_userid : "",
+          assign ? userId : "",
         );
         onRefetchData && onRefetchData();
       } catch (e) {

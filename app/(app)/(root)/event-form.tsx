@@ -6,8 +6,10 @@ import { getEvent } from "~/db";
 import { Loading } from "~/components/app/Loading";
 import { EventSchemaType } from "~/types.schema";
 import { usePreLoadFormData } from "~/hooks/usePreLoadFormData";
+import { useSession } from "~/ctx/AuthContext";
 
 export default function NewEventPage() {
+  const session = useSession();
   const { eventId } = useLocalSearchParams();
   const { data, preLoadingFormData } = usePreLoadFormData<EventSchemaType>(
     {
@@ -36,7 +38,11 @@ export default function NewEventPage() {
       {preLoadingFormData ? (
         <Loading />
       ) : (
-        <NewEventForm eventId={eventId as string} defaultValues={data} />
+        <NewEventForm
+          eventId={eventId as string}
+          defaultValues={data}
+          userId={session.userId!}
+        />
       )}
     </PageContainer>
   );

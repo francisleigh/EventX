@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { User } from "@firebase/auth";
 
 export const EventSchema = z.object({
   owner: z.string(),
@@ -99,3 +100,11 @@ export const PhoneVerificationSchema = z.object({
 export type PhoneVerificationSchemaType = z.infer<
   typeof PhoneVerificationSchema
 >;
+
+export const UserProfileSchema = z.object<{
+  [key in keyof Pick<User, "photoURL" | "displayName">]: z.ZodSchema;
+}>({
+  photoURL: z.string().optional(),
+  displayName: z.string().optional(),
+});
+export type UserProfileSchemaType = z.infer<typeof UserProfileSchema>;

@@ -1,9 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import {
-  PollOptionSchema,
-  BillPaymentSchemaType,
-  BillPaymentSchema,
-} from "~/types.schema";
+import { BillPaymentSchemaType, BillPaymentSchema } from "~/types.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,19 +9,19 @@ import { ErrorBox } from "~/components/app/ErrorBox";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { gap } from "~/constants/spacing";
-import { removeAllWhitespace } from "~/util";
-import { temp_userid } from "~/tempuser";
 
 export const NewBillPaymentForm = ({
   eventId,
   billId,
+  userId,
 }: {
   eventId: string;
   billId: string;
+  userId: string;
 }) => {
   const { control, handleSubmit, reset } = useForm<BillPaymentSchemaType>({
     defaultValues: {
-      userId: temp_userid,
+      userId,
     },
     resolver: zodResolver(BillPaymentSchema),
   });

@@ -15,6 +15,13 @@ export default function AppLayout() {
           header: () => null,
         }}
       />
+      <Stack.Screen
+        name="edit-profile"
+        options={{
+          presentation: "modal",
+          header: () => null,
+        }}
+      />
     </Stack>
   );
 }

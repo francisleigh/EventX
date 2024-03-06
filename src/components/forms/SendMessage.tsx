@@ -1,9 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import {
-  MessageSchema,
-  MessageSchemaType,
-  MessageThreadSchemaType,
-} from "~/types.schema";
+import { MessageSchema, MessageSchemaType } from "~/types.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "~/components/core/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -11,13 +7,22 @@ import { TextInput } from "~/components/core/FormElements";
 import { sendMessageToThread, updateMessageThreadDocument } from "~/db";
 import { colors } from "~/constants/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { temp_userid } from "~/tempuser";
+import { User } from "@firebase/auth";
 
-export const SendMessageForm = ({ threadId }: { threadId: string }) => {
+export const SendMessageForm = ({
+  threadId,
+  defaultValues = {},
+  userId,
+}: {
+  threadId: string;
+  defaultValues?: Partial<MessageSchemaType>;
+  userId: User["uid"];
+}) => {
   const { control, handleSubmit, reset, formState } =
     useForm<MessageSchemaType>({
       defaultValues: {
-        userId: temp_userid,
+        userId,
+        ...defaultValues,
       },
       resolver: zodResolver(MessageSchema),
     });
@@ -44,7 +49,7 @@ export const SendMessageForm = ({ threadId }: { threadId: string }) => {
         const newMessageCreatedAt = new Date();
         const newMessageId = await sendMessageToThread(threadId, {
           ...formValues,
-          userId: temp_userid,
+          userId,
           createdAt: newMessageCreatedAt,
         });
         if (newMessageId) {
