@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firebaseAuth, {
+  firebase,
+  FirebaseAuthTypes,
+} from "@react-native-firebase/auth";
 import { reload, User } from "@firebase/auth";
+import backend, { auth } from "~/backend";
+
+import * as RNAuth from "@react-native-firebase/auth";
 
 type AuthState = {
   userId: string | undefined;
@@ -13,6 +19,7 @@ type AuthState = {
   verifyNumber: (verificationCode: string) => Promise<void>;
   signOut: () => Promise<void>;
   reloadUser: () => Promise<void>;
+  updateUser: (data: User) => Promise<void>;
 };
 
 const AuthContext = React.createContext<AuthState>({
@@ -26,6 +33,7 @@ const AuthContext = React.createContext<AuthState>({
   verifyNumber: async () => {},
   signOut: async () => {},
   reloadUser: async () => {},
+  updateUser: async () => {},
 });
 
 // This hook can be used to access the user info.
@@ -36,36 +44,26 @@ export function useSession() {
 export function SessionProvider(props: React.PropsWithChildren) {
   const [initialisingAuth, setInitialisingAuth] = useState<boolean>(true);
   const [authBusy, setAuthBusy] = useState<boolean>(false);
-  const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   const [confirmHandler, setConfirmHandler] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
 
   useEffect(() => {
-    async function init() {
-      return new Promise((res) => {
-        setInitialisingAuth(false);
-        setAuthenticated(!!auth().currentUser);
-        setUser(auth().currentUser);
-        res(true);
-      });
-    }
-
-    void init();
+    return firebaseAuth().onAuthStateChanged((user) => {
+      console.log("onAuthStateChanged", user);
+      setInitialisingAuth(false);
+      setUser(user as User | null);
+    });
   }, []);
 
   const signIn: AuthState["signIn"] = async (phoneNumber) => {
     setAuthBusy(true);
     try {
-      console.log("sign in", phoneNumber);
-      const confirm = await auth().signInWithPhoneNumber(phoneNumber);
-      console.log("confirm", JSON.stringify(confirm, null, 2));
+      const confirm = await firebaseAuth().signInWithPhoneNumber(phoneNumber);
       if (confirm) setConfirmHandler(confirm);
-    } catch (e) {
-      setAuthenticated(false);
+    } catch (e: any) {
       setUser(null);
-      console.log("signIn error", e);
       throw new Error(e?.message ?? "Sign in error");
     } finally {
       setAuthBusy(false);
@@ -78,13 +76,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
     if (!confirmHandler) throw new Error("No confirmation controller present.");
 
     try {
-      const confirmation = await confirmHandler.confirm(verificationCode);
-      if (confirmation?.user) {
-        setAuthenticated(true);
-        setUser(confirmation.user);
-      }
-    } catch (e) {
-      setAuthenticated(false);
+      await confirmHandler.confirm(verificationCode);
+    } catch (e: any) {
       setUser(null);
       console.log("confirmSignIn error", e);
       throw new Error(e?.message ?? "Confirmation error");
@@ -96,9 +89,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const signOut: AuthState["signOut"] = async () => {
     setAuthBusy(true);
-    await auth().signOut();
+    await firebaseAuth().signOut();
     return new Promise((res) => {
-      setAuthenticated(false);
       setUser(null);
       setAuthBusy(false);
       res();
@@ -106,13 +98,16 @@ export function SessionProvider(props: React.PropsWithChildren) {
   };
 
   const reloadUser: AuthState["reloadUser"] = async () => {
-    if (!!user) {
-      await reload(user);
-    }
-    setUser(auth().currentUser);
+    if (!firebase.auth().currentUser) return;
+
+    setUser(firebase.auth().currentUser as unknown as User);
   };
 
-  console.log("USER", user);
+  const updateUser: AuthState["updateUser"] = async (data) => {
+    await firebase.auth().currentUser?.updateProfile(data);
+
+    await reloadUser();
+  };
 
   return (
     <AuthContext.Provider
@@ -125,8 +120,9 @@ export function SessionProvider(props: React.PropsWithChildren) {
         canVerifyNumber: !!confirmHandler,
         verifyNumber: confirmSignIn,
         signOut,
-        authenticated,
+        authenticated: !!user?.uid,
         reloadUser,
+        updateUser,
       }}
     >
       {props.children}

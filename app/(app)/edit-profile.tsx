@@ -2,9 +2,9 @@ import { PageContainer } from "~/components/core/Layout";
 import { Text } from "~/components/core/Text";
 import { useSession } from "~/ctx/AuthContext";
 import { useRouter } from "expo-router";
-import { updateUserProfile } from "~/db";
 import { UserProfileSchemaType } from "~/types.schema";
 import { EditProfileForm } from "~/components/forms/EditProfile";
+import { User } from "@firebase/auth";
 
 export default function EditProfilePage() {
   const session = useSession();
@@ -12,8 +12,7 @@ export default function EditProfilePage() {
 
   const handleProfileUpdate = async (formValues: UserProfileSchemaType) => {
     try {
-      await updateUserProfile(formValues);
-      await session.reloadUser();
+      await session.updateUser(formValues as User);
 
       router.replace("/");
     } catch (e) {
@@ -29,8 +28,8 @@ export default function EditProfilePage() {
         defaultValues={
           session.authenticated
             ? {
-                displayName: session.user?.displayName,
-                photoURL: session.user?.photoURL,
+                displayName: session.user?.displayName ?? "",
+                photoURL: session.user?.photoURL ?? "",
               }
             : undefined
         }
