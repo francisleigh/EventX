@@ -7,6 +7,7 @@ import { PhoneVerificationSchemaType, SignInSchemaType } from "~/types.schema";
 import { useState } from "react";
 import { PhoneVerificationForm } from "~/components/forms/PhoneVerification";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+
 export default function SignInPage() {
   const session = useSession();
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function SignInPage() {
           account, we will create one for you. Simple!
         </Text.Span>
       </Card>
-      {confirmHandler ? (
+      {session.canVerifyNumber ? (
         <PhoneVerificationForm onSubmit={handleVerifyCode} />
       ) : (
         <SignInForm onSubmit={handleSignIn} />

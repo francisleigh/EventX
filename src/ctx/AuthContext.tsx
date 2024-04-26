@@ -51,7 +51,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   useEffect(() => {
     return firebaseAuth().onAuthStateChanged((user) => {
-      console.log("onAuthStateChanged", user);
       setInitialisingAuth(false);
       setUser(user as User | null);
     });

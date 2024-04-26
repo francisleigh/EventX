@@ -1,26 +1,39 @@
 import { Redirect, Stack } from "expo-router";
-import { View } from "react-native";
-import { Loading } from "~/components/app/Loading";
+import { Image } from "react-native";
 import { useSession } from "~/ctx/AuthContext";
+import { sHeight, sWidth } from "~/constants/layout";
 
 export default function AuthLayout() {
   const session = useSession();
 
+  // useEffect(() => {
+  //   let unsubscribeNetInfo: NetInfoSubscription | undefined;
+  //   console.log("NET INFO", NetInfo);
+  //   if (NetInfo) {
+  //     unsubscribeNetInfo = NetInfo?.addEventListener((state) => {
+  //       console.log("netinfo state", state);
+  //     });
+  //   }
+  //
+  //   return () => {
+  //     if (unsubscribeNetInfo) unsubscribeNetInfo();
+  //   };
+  // }, []);
+
   if (session.initialisingAuth)
     return (
-      <View
+      <Image
+        source={require("../../../assets/splash.png")}
         style={{
-          flex: 1,
-          backgroundColor: "tomato",
-          justifyContent: "center",
-          alignItems: "center",
+          height: sHeight,
+          width: sWidth,
         }}
-      >
-        <Loading />
-      </View>
+      />
     );
 
   if (!session.authenticated) return <Redirect href={"/sign-in"} />;
+
+  // if (!netInfo.isConnected) return <Redirect href={"/no-internet"} />;
 
   if (!session.user?.displayName) return <Redirect href={"/edit-profile"} />;
 

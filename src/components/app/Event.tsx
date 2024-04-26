@@ -20,6 +20,7 @@ import { ExpiryDetails } from "~/components/core/ExpiryDetails";
 import { EventItemDescription } from "~/components/core/EventItemDescription";
 import { View } from "react-native";
 import { FAQAccordionItem } from "~/components/core/FAQAccordionItem";
+import { OverviewCalendar } from "~/components/app/OverviewCalendar";
 
 type EventProps = {
   eventId: string;
@@ -34,7 +35,8 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
   if (!data) return <Text.H1>No event data</Text.H1>;
 
-  const noItems = [...data.polls, ...data.bills, ...data.lists].length === 0;
+  const allEventItems = [...data.polls, ...data.bills, ...data.lists];
+  const noItems = allEventItems.length === 0;
 
   return (
     <Card
@@ -58,6 +60,12 @@ export const Event = ({ eventId, view, linkProps }: EventProps) => {
 
       {view === "full" && (
         <>
+          {/*{!!allEventItems.length && (*/}
+          {/*  <OverviewCalendar*/}
+          {/*    range={{ start: data.start?.toDate()!, end: data.end?.toDate()! }}*/}
+          {/*    events={allEventItems}*/}
+          {/*  />*/}
+          {/*)}*/}
           {data.description && (
             <EventItemDescription>{data.description}</EventItemDescription>
           )}

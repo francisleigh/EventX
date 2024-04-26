@@ -41,7 +41,7 @@ export const FAQSchema = z.object({
   title: z.string(),
   body: z.string(),
 });
-export const FAQSchemaType = z.infer<typeof FAQSchema>;
+export type FAQSchemaType = z.infer<typeof FAQSchema>;
 
 export const BillPaymentDetailsSchema = z.object({
   totalOwed: z.number().transform(Number),
@@ -51,6 +51,7 @@ export const BillPaymentDetailsSchema = z.object({
   sortCode: z.string().regex(/\d{2}-\d{2}-\d{2}/gm),
   accountNumber: z.string().length(8),
 });
+
 export const BillSchema = EventItemSchema.and(BillPaymentDetailsSchema);
 export const BillPaymentSchema = z.object({
   userId: z.string(),

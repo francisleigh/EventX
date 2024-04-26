@@ -15,6 +15,8 @@ export const EditProfileForm = ({
 }) => {
   const { control, handleSubmit } = useForm<UserProfileSchemaType>({
     defaultValues: {
+      displayName: "",
+      photoURL: "",
       ...defaultValues,
     },
     resolver: zodResolver(UserProfileSchema),

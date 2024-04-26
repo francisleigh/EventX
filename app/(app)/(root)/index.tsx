@@ -70,6 +70,14 @@ export default function Page() {
         <Button busy={session.authBusy} onPress={handleSignOut}>
           Sign out
         </Button>
+        <Link
+          href={{
+            pathname: "/edit-profile",
+          }}
+          asChild
+        >
+          <Button>Edit profile</Button>
+        </Link>
       </PageContainer>
     </>
   );

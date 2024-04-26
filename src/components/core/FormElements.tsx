@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.button,
     borderWidth: borderWidth.container,
     borderColor: colors.primary,
+    color: colors.primary,
   },
   textArea: {
     minHeight: sHeight * 0.2,

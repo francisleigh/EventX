@@ -16,7 +16,11 @@ export default function MessageThreadPage() {
       containerAs={"View"}
       scrollViewProps={{ nestedScrollEnabled: true }}
     >
-      <MessageThread threadId={params.id as string} />
+      <MessageThread
+        threadId={params.id as string}
+        eventId={params.eventId as string}
+        eventItemId={params.eventItemId as string | undefined}
+      />
     </PageContainer>
   );
 }

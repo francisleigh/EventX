@@ -9,12 +9,30 @@ import { MessageBubble } from "~/components/app/MessageBubble";
 import { SendMessageForm } from "~/components/forms/SendMessage";
 import { FlashList } from "@shopify/flash-list";
 import { useSession } from "~/ctx/AuthContext";
+import { useEventData } from "~/hooks/useEventData";
+import { useEventItemData } from "~/hooks/useEventItemData";
 
-export const MessageThread = (props: { threadId: string }) => {
+export const MessageThread = (props: {
+  threadId: string;
+  eventId: string;
+  eventItemId?: string;
+}) => {
   const session = useSession();
   const { data, messages, fetchingMessages, fetchingThread } = useMessageThread(
-    { threadId: props.threadId },
+    {
+      threadId: props.threadId,
+    },
   );
+
+  const { data: eventData } = useEventData({ eventId: props.eventId });
+
+  const { data: eventItemData } = useEventItemData({
+    eventId: data?.eventId!,
+    eventItemId: data?.eventItemId,
+  });
+
+  // console.log("eventData", eventData);
+  // console.log("eventItemData", eventItemData);
 
   if (fetchingThread) return <Loading />;
 
@@ -22,7 +40,7 @@ export const MessageThread = (props: { threadId: string }) => {
 
   return (
     <>
-      <Text.H1>Thread {data?.id}</Text.H1>
+      <Text.H1>Thread {eventItemData?.title || eventData?.title}</Text.H1>
       <FlashList
         data={messages}
         style={styles.listContainer}
@@ -40,7 +58,6 @@ export const MessageThread = (props: { threadId: string }) => {
             />
           );
         }}
-        stickyHeaderIndices={[0]}
         ListHeaderComponent={
           <View style={styles.composeContainer}>
             <SendMessageForm threadId={data.id} userId={session.userId!} />
